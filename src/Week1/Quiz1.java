@@ -1,3 +1,4 @@
+package Week1;
 import edu.princeton.cs.algs4.*;
 
 public class Quiz1 {
