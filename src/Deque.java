@@ -99,7 +99,6 @@ public class Deque<Item> implements Iterable<Item> {
 
 	private class DequeIterator implements Iterator<Item> {
 		int iteratorHead = head;
-		int iteratorTail = tail;
 		int iteratorSize = size;
 
 		@Override
