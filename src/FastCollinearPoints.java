@@ -1,5 +1,3 @@
-import java.util.Comparator;
-
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MergeX;
 import edu.princeton.cs.algs4.Quick;
@@ -26,7 +24,8 @@ public class FastCollinearPoints {
 		Quick.sort(points);
 		for (int i = 0; i < numOfPoints - 1; i++) {
 			if (points[i] == points[i + 1])
-				throw new IllegalArgumentException("No duplicated points are allowed!");
+				throw new IllegalArgumentException(
+						"No duplicated points are allowed!");
 		}
 
 		lineSegmentQueue = new ResizingArrayQueue<>();
@@ -42,11 +41,11 @@ public class FastCollinearPoints {
 				else
 					otherPoints[j] = points[j + 1];
 			}
-			MergeX.sort(otherPoints, new AbsSlopeOrderComparator(point));
+			MergeX.sort(otherPoints, point.slopeOrder());
 			int pointCounter = 1;
-			double slope = Math.abs(point.slopeTo(otherPoints[0]));
+			double slope = point.slopeTo(otherPoints[0]);
 			for (int j = 1; j < numOtherPoints; j++) {
-				double currentSlope = Math.abs(point.slopeTo(otherPoints[j]));
+				double currentSlope = point.slopeTo(otherPoints[j]);
 				if (slope == currentSlope) {
 					pointCounter++;
 					// Don't forget when it reaches the end of array
@@ -61,18 +60,24 @@ public class FastCollinearPoints {
 				if (pointCounter >= 3) {
 					// new slope, save into the ST OR existing slope, but
 					// different lines
-					if (tableOfSlope.get(slope) == null || !tableOfSlope.get(slope).contains(point)) {
+					if (tableOfSlope.get(slope) == null
+							|| !tableOfSlope.get(slope).contains(point)) {
 						segmentCounter++;
 						SET<Point> pointWithThisSlope = new SET<>();
 						pointWithThisSlope.add(point);
 						for (int k = idxEndPoint - pointCounter + 1; k <= idxEndPoint; k++) {
 							pointWithThisSlope.add(otherPoints[k]);
 						}
-						lineSegmentQueue.enqueue(new LineSegment(pointWithThisSlope.min(), pointWithThisSlope.max()));
+						LineSegment segment = new LineSegment(
+								pointWithThisSlope.min(),
+								pointWithThisSlope.max());
+						lineSegmentQueue.enqueue(segment);
+						segment.draw();
 						if (tableOfSlope.get(slope) == null)
 							tableOfSlope.put(slope, pointWithThisSlope);
 						else
-							tableOfSlope.put(slope, tableOfSlope.get(slope).union(pointWithThisSlope));
+							tableOfSlope.put(slope, tableOfSlope.get(slope)
+									.union(pointWithThisSlope));
 					}
 				}
 				// reset slope and pointCounter
@@ -82,23 +87,22 @@ public class FastCollinearPoints {
 		}
 
 	}
-	
-    private class AbsSlopeOrderComparator implements Comparator<Point>{
-    	private Point thisPoint;
-    	
-    	public AbsSlopeOrderComparator(Point thisPoint) {
-    		this.thisPoint=thisPoint;
-		}
 
-		@Override
-		public int compare(Point o1, Point o2) {
-			double slope1 = Math.abs(thisPoint.slopeTo(o1));
-			double slope2 = Math.abs(thisPoint.slopeTo(o2));
-			return ((Double) slope1).compareTo(slope2);
-		}
-    	
-    }
-
+	// private class AbsSlopeOrderComparator implements Comparator<Point>{
+	// private Point thisPoint;
+	//
+	// public AbsSlopeOrderComparator(Point thisPoint) {
+	// this.thisPoint=thisPoint;
+	// }
+	//
+	// @Override
+	// public int compare(Point o1, Point o2) {
+	// double slope1 = Math.abs(thisPoint.slopeTo(o1));
+	// double slope2 = Math.abs(thisPoint.slopeTo(o2));
+	// return ((Double) slope1).compareTo(slope2);
+	// }
+	//
+	// }
 
 	public int numberOfSegments() {
 		// the number of line segments
@@ -140,7 +144,7 @@ public class FastCollinearPoints {
 		FastCollinearPoints collinear = new FastCollinearPoints(points);
 		for (LineSegment segment : collinear.segments()) {
 			StdOut.println(segment);
-			segment.draw();
+			// segment.draw();
 		}
 	}
 
