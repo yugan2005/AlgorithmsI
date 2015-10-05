@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MergeX;
 import edu.princeton.cs.algs4.Quick;
@@ -30,60 +32,73 @@ public class FastCollinearPoints {
 		lineSegmentQueue = new ResizingArrayQueue<>();
 		ST<Double, SET<Point>> tableOfSlope = new ST<>();
 
-		for (int i = 0; i < numOfPoints - 3; i++) {
+		for (int i = 0; i < numOfPoints; i++) {
 			Point point = points[i];
-			int numOtherPoints = numOfPoints - i - 1;
+			int numOtherPoints = numOfPoints - 1;
 			Point[] otherPoints = new Point[numOtherPoints];
 			for (int j = 0; j < numOtherPoints; j++) {
-				otherPoints[j] = points[i + j + 1];
+				if (j < i)
+					otherPoints[j] = points[j];
+				else
+					otherPoints[j] = points[j + 1];
 			}
-			MergeX.sort(otherPoints, point.slopeOrder());
+			MergeX.sort(otherPoints, new AbsSlopeOrderComparator(point));
 			int pointCounter = 1;
-			double slope = point.slopeTo(otherPoints[0]);
+			double slope = Math.abs(point.slopeTo(otherPoints[0]));
 			for (int j = 1; j < numOtherPoints; j++) {
-				if (slope == point.slopeTo(otherPoints[j])) {
-					pointCounter++; // Don't forget when it reaches the end of
-									// array
+				double currentSlope = Math.abs(point.slopeTo(otherPoints[j]));
+				if (slope == currentSlope) {
+					pointCounter++;
+					// Don't forget when it reaches the end of array
 					if (j != numOtherPoints - 1)
 						continue;
 				}
 
 				int idxEndPoint = j - 1;
-				if (j == numOtherPoints - 1)
+				if (j == numOtherPoints - 1 && slope == currentSlope)
 					idxEndPoint = j;
 
 				if (pointCounter >= 3) {
-					// new slope, save into the ST
-					if (tableOfSlope.get(slope) == null) {
-						lineSegmentQueue.enqueue(new LineSegment(point, otherPoints[idxEndPoint]));
+					// new slope, save into the ST OR existing slope, but
+					// different lines
+					if (tableOfSlope.get(slope) == null || !tableOfSlope.get(slope).contains(point)) {
 						segmentCounter++;
 						SET<Point> pointWithThisSlope = new SET<>();
 						pointWithThisSlope.add(point);
 						for (int k = idxEndPoint - pointCounter + 1; k <= idxEndPoint; k++) {
 							pointWithThisSlope.add(otherPoints[k]);
 						}
-						tableOfSlope.put(slope, pointWithThisSlope);
-					}
-					// existing slope, but different lines
-					else if (!tableOfSlope.get(slope).contains(point)) {
-						lineSegmentQueue.enqueue(new LineSegment(point, otherPoints[idxEndPoint]));
-						segmentCounter++;
-						SET<Point> pointWithThisSlope = tableOfSlope.get(slope);
-						pointWithThisSlope.add(point);
-						for (int k = idxEndPoint - pointCounter + 1; k <= idxEndPoint; k++) {
-							pointWithThisSlope.add(otherPoints[k]);
-						}
-						tableOfSlope.put(slope, pointWithThisSlope);
+						lineSegmentQueue.enqueue(new LineSegment(pointWithThisSlope.min(), pointWithThisSlope.max()));
+						if (tableOfSlope.get(slope) == null)
+							tableOfSlope.put(slope, pointWithThisSlope);
+						else
+							tableOfSlope.put(slope, tableOfSlope.get(slope).union(pointWithThisSlope));
 					}
 				}
-
 				// reset slope and pointCounter
-				slope = point.slopeTo(otherPoints[j]);
+				slope = currentSlope;
 				pointCounter = 1;
 			}
 		}
 
 	}
+	
+    private class AbsSlopeOrderComparator implements Comparator<Point>{
+    	private Point thisPoint;
+    	
+    	public AbsSlopeOrderComparator(Point thisPoint) {
+    		this.thisPoint=thisPoint;
+		}
+
+		@Override
+		public int compare(Point o1, Point o2) {
+			double slope1 = Math.abs(thisPoint.slopeTo(o1));
+			double slope2 = Math.abs(thisPoint.slopeTo(o2));
+			return ((Double) slope1).compareTo(slope2);
+		}
+    	
+    }
+
 
 	public int numberOfSegments() {
 		// the number of line segments
