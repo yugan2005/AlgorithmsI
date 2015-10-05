@@ -1,12 +1,14 @@
-import java.util.Comparator;
-
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MergeX;
 import edu.princeton.cs.algs4.Quick;
 import edu.princeton.cs.algs4.ResizingArrayQueue;
+import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.StdDraw;
+import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
-	
+
 	private ResizingArrayQueue<LineSegment> lineSegmentQueue;
 	private int segmentCounter = 0;
 
@@ -26,64 +28,105 @@ public class FastCollinearPoints {
 		}
 
 		lineSegmentQueue = new ResizingArrayQueue<>();
-		ST<Double,ResizingArrayQueue<Point>> tableOfSlope = new ST<>();
-		
-		for (int i=0; i<numOfPoints-3; i++){
+		ST<Double, SET<Point>> tableOfSlope = new ST<>();
+
+		for (int i = 0; i < numOfPoints - 3; i++) {
 			Point point = points[i];
-			Comparator<Point> slopeComparator = point.slopeOrder();
-			int numOtherPoints = numOfPoints-i-1;
+			int numOtherPoints = numOfPoints - i - 1;
 			Point[] otherPoints = new Point[numOtherPoints];
-			for (int j=0; j<numOtherPoints; j++){
-				otherPoints[j]=points[i+j+1];
+			for (int j = 0; j < numOtherPoints; j++) {
+				otherPoints[j] = points[i + j + 1];
 			}
-			MergeX.sort(otherPoints, slopeComparator);
+			MergeX.sort(otherPoints, point.slopeOrder());
 			int pointCounter = 1;
 			double slope = point.slopeTo(otherPoints[0]);
-			for (int j=1; j<numOtherPoints; j++){
+			for (int j = 1; j < numOtherPoints; j++) {
 				if (slope == point.slopeTo(otherPoints[j])) {
-					pointCounter++;
+					pointCounter++; // Don't forget when it reaches the end of
+									// array
+					if (j != numOtherPoints - 1)
+						continue;
 				}
-				else {
-					if (pointCounter>=4) {
-						if (tableOfSlope.get(slope)==null) {
-							lineSegmentQueue.enqueue(new LineSegment(point, otherPoints[j-1]));
-							ResizingArrayQueue<Point> pointWithThisSlope = new ResizingArrayQueue<>();
-							pointWithThisSlope.enqueue(point);
-							for (int k=j-pointCounter; k<j; k++){
-								pointWithThisSlope.enqueue(otherPoints[k]);
-							}
-							tableOfSlope.put(slope, pointWithThisSlope);
+
+				int idxEndPoint = j - 1;
+				if (j == numOtherPoints - 1)
+					idxEndPoint = j;
+
+				if (pointCounter >= 3) {
+					// new slope, save into the ST
+					if (tableOfSlope.get(slope) == null) {
+						lineSegmentQueue.enqueue(new LineSegment(point, otherPoints[idxEndPoint]));
+						segmentCounter++;
+						SET<Point> pointWithThisSlope = new SET<>();
+						pointWithThisSlope.add(point);
+						for (int k = idxEndPoint - pointCounter + 1; k <= idxEndPoint; k++) {
+							pointWithThisSlope.add(otherPoints[k]);
 						}
-						else {
-							
-						}
-						
+						tableOfSlope.put(slope, pointWithThisSlope);
 					}
-					
-					
-					slope = point.slopeTo(otherPoints[j]);
-					
+					// existing slope, but different lines
+					else if (!tableOfSlope.get(slope).contains(point)) {
+						lineSegmentQueue.enqueue(new LineSegment(point, otherPoints[idxEndPoint]));
+						segmentCounter++;
+						SET<Point> pointWithThisSlope = tableOfSlope.get(slope);
+						pointWithThisSlope.add(point);
+						for (int k = idxEndPoint - pointCounter + 1; k <= idxEndPoint; k++) {
+							pointWithThisSlope.add(otherPoints[k]);
+						}
+						tableOfSlope.put(slope, pointWithThisSlope);
+					}
 				}
+
+				// reset slope and pointCounter
+				slope = point.slopeTo(otherPoints[j]);
+				pointCounter = 1;
 			}
-			
 		}
-		
-		
+
 	}
 
 	public int numberOfSegments() {
 		// the number of line segments
-		return 0;
+		return segmentCounter;
 	}
 
 	public LineSegment[] segments() {
 		// the line segments
-		return null;
+		LineSegment[] lineSegments = new LineSegment[segmentCounter];
+		int idx = 0;
+		for (LineSegment eachSegment : lineSegmentQueue) {
+			lineSegments[idx] = eachSegment;
+			idx++;
+		}
+		return lineSegments;
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		// read the N points from a file
+		In in = new In(args[0]);
+		int N = in.readInt();
+		Point[] points = new Point[N];
+		for (int i = 0; i < N; i++) {
+			int x = in.readInt();
+			int y = in.readInt();
+			points[i] = new Point(x, y);
+		}
 
+		// draw the points
+		StdDraw.show(0);
+		StdDraw.setXscale(0, 32768);
+		StdDraw.setYscale(0, 32768);
+		for (Point p : points) {
+			p.draw();
+		}
+		StdDraw.show();
+
+		// print and draw the line segments
+		FastCollinearPoints collinear = new FastCollinearPoints(points);
+		for (LineSegment segment : collinear.segments()) {
+			StdOut.println(segment);
+			segment.draw();
+		}
 	}
 
 }
