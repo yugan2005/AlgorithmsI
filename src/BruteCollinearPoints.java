@@ -17,10 +17,16 @@ public class BruteCollinearPoints {
 
 		int numOfPoints = points.length;
 
-		Quick.sort(points);
+		Point[] copyOfPoints = new Point[numOfPoints];
+		for (int i = 0; i < numOfPoints; i++) {
+			copyOfPoints[i] = points[i];
+		}
+
+		Quick.sort(copyOfPoints);
 		for (int i = 0; i < numOfPoints - 1; i++) {
-			if (points[i] == points[i + 1])
-				throw new IllegalArgumentException("No duplicated points are allowed!");
+			if (copyOfPoints[i].slopeTo(copyOfPoints[i + 1]) == Double.NEGATIVE_INFINITY)
+				throw new IllegalArgumentException(
+						"No duplicated points are allowed!");
 		}
 
 		lineSegmentQueue = new ResizingArrayQueue<>();
@@ -29,15 +35,19 @@ public class BruteCollinearPoints {
 			for (int j = i + 1; j < numOfPoints - 2; j++) {
 				for (int k = j + 1; k < numOfPoints - 1; k++) {
 					for (int m = k + 1; m < numOfPoints; m++) {
-						if (points[i].slopeTo(points[j]) == points[j].slopeTo(points[k])
-								&& points[j].slopeTo(points[k]) == points[k].slopeTo(points[m])) {
-							lineSegmentQueue.enqueue(new LineSegment(points[i], points[m]));
+						if (copyOfPoints[i].slopeTo(copyOfPoints[j]) == copyOfPoints[j]
+								.slopeTo(copyOfPoints[k])
+								&& copyOfPoints[j].slopeTo(copyOfPoints[k]) == copyOfPoints[k]
+										.slopeTo(copyOfPoints[m])) {
+							lineSegmentQueue.enqueue(new LineSegment(
+									copyOfPoints[i], copyOfPoints[m]));
 							segmentCounter += 1;
 						}
 					}
 				}
 			}
 		}
+
 	}
 
 	public int numberOfSegments() {

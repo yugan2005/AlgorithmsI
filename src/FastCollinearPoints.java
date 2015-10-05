@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class FastCollinearPoints {
 
-	private ResizingArrayQueue<LineSegment> lineSegmentQueue;
+	private ResizingArrayQueue<LineSegment> lineSegmentQueue = null;
 	private int segmentCounter = 0;
 
 	public FastCollinearPoints(Point[] points) {
@@ -21,9 +21,14 @@ public class FastCollinearPoints {
 
 		int numOfPoints = points.length;
 
-		Quick.sort(points);
+		Point[] copyOfPoints = new Point[numOfPoints];
+		for (int i = 0; i < numOfPoints; i++) {
+			copyOfPoints[i] = points[i];
+		}
+
+		Quick.sort(copyOfPoints);
 		for (int i = 0; i < numOfPoints - 1; i++) {
-			if (points[i] == points[i + 1])
+			if (copyOfPoints[i].slopeTo(copyOfPoints[i + 1]) == Double.NEGATIVE_INFINITY)
 				throw new IllegalArgumentException(
 						"No duplicated points are allowed!");
 		}
@@ -32,14 +37,16 @@ public class FastCollinearPoints {
 		ST<Double, SET<Point>> tableOfSlope = new ST<>();
 
 		for (int i = 0; i < numOfPoints; i++) {
-			Point point = points[i];
+			Point point = copyOfPoints[i];
 			int numOtherPoints = numOfPoints - 1;
+			if (numOtherPoints == 0)
+				return;
 			Point[] otherPoints = new Point[numOtherPoints];
 			for (int j = 0; j < numOtherPoints; j++) {
 				if (j < i)
-					otherPoints[j] = points[j];
+					otherPoints[j] = copyOfPoints[j];
 				else
-					otherPoints[j] = points[j + 1];
+					otherPoints[j] = copyOfPoints[j + 1];
 			}
 			MergeX.sort(otherPoints, point.slopeOrder());
 			int pointCounter = 1;
@@ -86,22 +93,6 @@ public class FastCollinearPoints {
 		}
 
 	}
-
-	// private class AbsSlopeOrderComparator implements Comparator<Point>{
-	// private Point thisPoint;
-	//
-	// public AbsSlopeOrderComparator(Point thisPoint) {
-	// this.thisPoint=thisPoint;
-	// }
-	//
-	// @Override
-	// public int compare(Point o1, Point o2) {
-	// double slope1 = Math.abs(thisPoint.slopeTo(o1));
-	// double slope2 = Math.abs(thisPoint.slopeTo(o2));
-	// return ((Double) slope1).compareTo(slope2);
-	// }
-	//
-	// }
 
 	public int numberOfSegments() {
 		// the number of line segments
