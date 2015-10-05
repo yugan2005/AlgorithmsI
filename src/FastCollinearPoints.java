@@ -72,7 +72,6 @@ public class FastCollinearPoints {
 								pointWithThisSlope.min(),
 								pointWithThisSlope.max());
 						lineSegmentQueue.enqueue(segment);
-						segment.draw();
 						if (tableOfSlope.get(slope) == null)
 							tableOfSlope.put(slope, pointWithThisSlope);
 						else
@@ -144,7 +143,7 @@ public class FastCollinearPoints {
 		FastCollinearPoints collinear = new FastCollinearPoints(points);
 		for (LineSegment segment : collinear.segments()) {
 			StdOut.println(segment);
-			// segment.draw();
+			segment.draw();
 		}
 	}
 
