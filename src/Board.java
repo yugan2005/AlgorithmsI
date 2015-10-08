@@ -167,7 +167,17 @@ public class Board {
 	public String toString() {
 		// string representation of this board (in the output format specified
 		// below)
-		return null;
+		
+		StringBuilder boardStrBuilder = new StringBuilder();
+		boardStrBuilder.append(String.valueOf(N));
+		boardStrBuilder.append(System.lineSeparator());
+		for (int i=0; i<N; i++){
+			for (int j=0; j<N; j++){
+				boardStrBuilder.append(" "+String.valueOf(blocks[i][j]));
+			}
+			boardStrBuilder.append(System.lineSeparator());
+		}
+		return boardStrBuilder.toString();
 	}
 
 	private int[] convertIdx(int oneDIdx) {

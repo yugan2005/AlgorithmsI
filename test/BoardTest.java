@@ -87,7 +87,20 @@ public class BoardTest {
 
 	@Test
 	public void testToString() {
-		fail("Not yet implemented");
+		StringBuilder boardStrBuilder = new StringBuilder();
+		boardStrBuilder.append("3");
+		boardStrBuilder.append(System.lineSeparator());
+		boardStrBuilder.append(" 8 1 3");
+		boardStrBuilder.append(System.lineSeparator());
+		boardStrBuilder.append(" 4 0 2");
+		boardStrBuilder.append(System.lineSeparator());
+		boardStrBuilder.append(" 7 6 5");
+		boardStrBuilder.append(System.lineSeparator());
+		String board31StringByHand = boardStrBuilder.toString();
+		
+		String board31String = board31.toString();
+		
+		assertThat(board31String, equalTo(board31StringByHand));
 	}
 
 }
