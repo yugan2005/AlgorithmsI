@@ -7,12 +7,14 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
-	SearchNode root, rootTwin;
-	MinPQ<SearchNode> pqRoot, pqTwin;
-	boolean solvable;
-	SearchNode solution;
-	SET<ComparableBoard> addedBoardSet;
-	SET<ComparableBoard> addedBoardSetTwin;
+	private SearchNode root, rootTwin;
+	private MinPQ<SearchNode> pqRoot, pqTwin;
+	private boolean solvable;
+	private SearchNode solution;
+	private SearchNode solutionTwin;
+	private SET<String> testedBoardSet;
+	private SET<String> testedBoardSetTwin;
+	private int runSteps;
 
 
 	public Solver(Board initial) {
@@ -28,14 +30,13 @@ public class Solver {
 		pqRoot.insert(root);
 		pqTwin.insert(rootTwin);
 		
-		addedBoardSet = new SET<ComparableBoard>();
-		addedBoardSetTwin = new SET<ComparableBoard>();
+		testedBoardSet = new SET<String>();
+		testedBoardSetTwin = new SET<String>();
 		
-		addedBoardSet.add(new ComparableBoard(initial));
-		addedBoardSetTwin.add(new ComparableBoard(initialTwin));
-
+		runSteps = 0;
 
 		while (!pqRoot.isEmpty() && !pqTwin.isEmpty()) {
+
 			SearchNode currentNode = pqRoot.delMin();
 			int currentMove = currentNode.moveMade;
 			Board currentBoard = currentNode.board;
@@ -52,33 +53,37 @@ public class Solver {
 
 			if (currentBoardTwin.isGoal()) {
 				solvable = false;
+				solutionTwin = currentNodeTwin;
 				return;
 			}
-
-//			SearchNode parentNode = currentNode.previousNode;
-			Iterable<Board> childBoards = currentBoard.neighbors();
-
-			for (Board childBoard : childBoards) {
-				ComparableBoard childBoardAdd = new ComparableBoard(childBoard);
-				if (!addedBoardSet.contains(childBoardAdd)) {
-					addedBoardSet.add(childBoardAdd);
-					SearchNode childNode = new SearchNode(currentNode, childBoard, currentMove + 1);
-					pqRoot.insert(childNode);
+			
+			if (!testedBoardSet.contains(currentBoard.hashBoardCode())) {
+				testedBoardSet.add(currentBoard.hashBoardCode());
+				
+				Iterable<Board> childBoards = currentBoard.neighbors();
+				for (Board childBoard : childBoards) {
+					if (currentNode.previousNode==null || !childBoard.equals(currentNode.previousNode.board)) {
+						SearchNode childNode = new SearchNode(currentNode, childBoard, currentMove + 1);
+						pqRoot.insert(childNode);
+					}				
 				}
 			}
 
-//			SearchNode parentNodeTwin = currentNodeTwin.previousNode;
-			Iterable<Board> childBoardsTwin = currentBoardTwin.neighbors();
-
-			for (Board childBoardTwin : childBoardsTwin) {
-				ComparableBoard childBoardAddTwin = new ComparableBoard(childBoardTwin);
-				if (!addedBoardSetTwin.contains(childBoardAddTwin)) {
-					addedBoardSetTwin.add(childBoardAddTwin);
-					SearchNode childNodeTwin = new SearchNode(currentNodeTwin, childBoardTwin, currentMoveTwin + 1);
-					pqTwin.insert(childNodeTwin);
+			
+			if (!testedBoardSetTwin.contains(currentBoardTwin.hashBoardCode())) {
+				testedBoardSetTwin.add(currentBoardTwin.hashBoardCode());
+				
+				Iterable<Board> childBoardsTwin = currentBoardTwin.neighbors();
+	
+				for (Board childBoardTwin : childBoardsTwin) {
+					if (currentNodeTwin.previousNode==null || !childBoardsTwin.equals(currentNodeTwin.previousNode.board)) {
+						SearchNode childNodeTwin = new SearchNode(currentNodeTwin, childBoardTwin, currentMoveTwin + 1);
+						pqTwin.insert(childNodeTwin);
+					}
 				}
 			}
 			
+			runSteps++;
 			System.out.println(currentMove);
 
 		}
@@ -114,6 +119,22 @@ public class Solver {
 
 		return null;
 	}
+	
+	public Iterable<Board> solutionTwin() {
+		// sequence of boards in a shortest solution; null if unsolvable
+		if (!solvable) {
+			Stack<Board> solutionStack = new Stack<>();
+			SearchNode solutionNode = solutionTwin;
+			while (solutionNode != null) {
+				solutionStack.push(solutionNode.board);
+				solutionNode = solutionNode.previousNode;
+			}
+
+			return solutionStack;
+		}
+
+		return null;
+	}
 
 	private class SearchNode implements Comparable<SearchNode> {
 		SearchNode previousNode;
@@ -132,20 +153,7 @@ public class Solver {
 		public int compareTo(SearchNode that) {
 			return ((Integer) this.priorityNum).compareTo(that.priorityNum);
 		}
-	}
-
-	private class ComparableBoard implements Comparable<ComparableBoard> {
-		private Board board;
-
-		public ComparableBoard(Board board) {
-			this.board = board;
-		}
-
-		@Override
-		public int compareTo(ComparableBoard that) {
-			return ((Integer) this.board.hashBoardCode()).compareTo(that.board.hashBoardCode());
-		}
-	}
+	}	
 
 	public static void main(String[] args) {
 		// solve a slider puzzle (given below)
@@ -162,10 +170,17 @@ public class Solver {
 		Solver solver = new Solver(initial);
 
 		// print solution to standard output
-		if (!solver.isSolvable())
+		if (!solver.isSolvable()){
 			StdOut.println("No solution possible");
+			System.out.println(solver.runSteps);
+			StdOut.println("Twin Solution is:");
+			for (Board board : solver.solutionTwin())
+				StdOut.println(board);
+		}
+			
 		else {
 			StdOut.println("Minimum number of moves = " + solver.moves());
+			System.out.println(solver.runSteps);
 			for (Board board : solver.solution())
 				StdOut.println(board);
 		}

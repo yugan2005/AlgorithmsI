@@ -164,14 +164,14 @@ public class Board{
 		a[i2][j2] = temp;
 	}
 	
-	public int hashBoardCode(){
-		int hashCode = 0;
+	public String hashBoardCode(){
+		StringBuilder hashString = new StringBuilder();
 		for (int i=0; i<N; i++){
 			for (int j=0; j<N; j++){
-				hashCode += (i*N+j+1)*(blocks[i][j]+N*N)*(blocks[i][j]+N*N);
+				hashString.append(String.format("%3d", blocks[i][j]));
 			}
 		}
-		return hashCode;
+		return hashString.toString();
 	}
 
 	public String toString() {
