@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.ResizingArrayQueue;
 
-public class Board {
+public class Board{
 	private final int[][] blocks; // The final modifier actually is not useful
 									// as I throught
 	private final int N;
@@ -162,6 +162,16 @@ public class Board {
 		int temp = a[i1][j1];
 		a[i1][j1] = a[i2][j2];
 		a[i2][j2] = temp;
+	}
+	
+	public int hashBoardCode(){
+		int hashCode = 0;
+		for (int i=0; i<N; i++){
+			for (int j=0; j<N; j++){
+				hashCode += (i*N+j+1)*(blocks[i][j]+N*N)*(blocks[i][j]+N*N);
+			}
+		}
+		return hashCode;
 	}
 
 	public String toString() {
