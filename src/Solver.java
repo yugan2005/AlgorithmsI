@@ -10,7 +10,7 @@ public class Solver {
 	private MinPQ<SearchNode> pqRoot, pqTwin;
 	private boolean solvable;
 	private SearchNode solution;
-	private int runSteps; //debug
+//	private int runSteps; //debug
 
 	public Solver(Board initial) {
 		// find a solution to the initial board (using the A* algorithm)
@@ -25,7 +25,7 @@ public class Solver {
 		pqRoot.insert(root);
 		pqTwin.insert(rootTwin);
 		
-		runSteps = 0; //debug
+//		runSteps = 0; //debug
 
 		while (!pqRoot.isEmpty() && !pqTwin.isEmpty()) {
 			SearchNode currentNode = pqRoot.delMin();
@@ -67,7 +67,7 @@ public class Solver {
 				}
 			}
 			
-			runSteps++; //debug
+//			runSteps++; //debug
 
 		}
 
@@ -141,7 +141,7 @@ public class Solver {
 			StdOut.println("No solution possible");
 		else {
 			StdOut.println("Minimum number of moves = " + solver.moves());
-			System.out.println(solver.runSteps); //debug
+//			System.out.println(solver.runSteps); //debug
 			for (Board board : solver.solution())
 				StdOut.println(board);
 		}
