@@ -76,8 +76,8 @@ public class Board {
 				if (blocks[i][j] != 0) {
 					nonZeroIdx[counter][0] = i;
 					nonZeroIdx[counter][1] = j;
+					counter++;
 				}
-				counter++;
 				if (counter == 2) {
 					int temp = blockTwin[nonZeroIdx[0][0]][nonZeroIdx[0][1]];
 					blockTwin[nonZeroIdx[0][0]][nonZeroIdx[0][1]] = blockTwin[nonZeroIdx[1][0]][nonZeroIdx[1][1]];
