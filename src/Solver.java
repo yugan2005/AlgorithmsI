@@ -1,5 +1,6 @@
-
 // Reference of this A* algorithm: https://en.wikipedia.org/wiki/A*_search_algorithm
+// This version try to exclude the already tested Board, but the improvement is not that great.
+// The test for puzzle4x4-40.txt shows that this version took 170214, and the original version took 395893, so it is only 2.32 times improvement 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
 import edu.princeton.cs.algs4.SET;
@@ -16,7 +17,6 @@ public class Solver {
 	private SET<String> testedBoardSetTwin;
 	private int runSteps;
 
-
 	public Solver(Board initial) {
 		// find a solution to the initial board (using the A* algorithm)
 		if (initial == null)
@@ -29,10 +29,10 @@ public class Solver {
 
 		pqRoot.insert(root);
 		pqTwin.insert(rootTwin);
-		
+
 		testedBoardSet = new SET<String>();
 		testedBoardSetTwin = new SET<String>();
-		
+
 		runSteps = 0;
 
 		while (!pqRoot.isEmpty() && !pqTwin.isEmpty()) {
@@ -56,33 +56,39 @@ public class Solver {
 				solutionTwin = currentNodeTwin;
 				return;
 			}
-			
+
 			if (!testedBoardSet.contains(currentBoard.hashBoardCode())) {
 				testedBoardSet.add(currentBoard.hashBoardCode());
-				
+
 				Iterable<Board> childBoards = currentBoard.neighbors();
 				for (Board childBoard : childBoards) {
-					if (currentNode.previousNode==null || !childBoard.equals(currentNode.previousNode.board)) {
-						SearchNode childNode = new SearchNode(currentNode, childBoard, currentMove + 1);
+					if (currentNode.previousNode == null
+							|| !childBoard
+									.equals(currentNode.previousNode.board)) {
+						SearchNode childNode = new SearchNode(currentNode,
+								childBoard, currentMove + 1);
 						pqRoot.insert(childNode);
-					}				
+					}
 				}
 			}
 
-			
 			if (!testedBoardSetTwin.contains(currentBoardTwin.hashBoardCode())) {
 				testedBoardSetTwin.add(currentBoardTwin.hashBoardCode());
-				
+
 				Iterable<Board> childBoardsTwin = currentBoardTwin.neighbors();
-	
+
 				for (Board childBoardTwin : childBoardsTwin) {
-					if (currentNodeTwin.previousNode==null || !childBoardsTwin.equals(currentNodeTwin.previousNode.board)) {
-						SearchNode childNodeTwin = new SearchNode(currentNodeTwin, childBoardTwin, currentMoveTwin + 1);
+					if (currentNodeTwin.previousNode == null
+							|| !childBoardsTwin
+									.equals(currentNodeTwin.previousNode.board)) {
+						SearchNode childNodeTwin = new SearchNode(
+								currentNodeTwin, childBoardTwin,
+								currentMoveTwin + 1);
 						pqTwin.insert(childNodeTwin);
 					}
 				}
 			}
-			
+
 			runSteps++;
 			System.out.println(currentMove);
 
@@ -119,7 +125,7 @@ public class Solver {
 
 		return null;
 	}
-	
+
 	public Iterable<Board> solutionTwin() {
 		// sequence of boards in a shortest solution; null if unsolvable
 		if (!solvable) {
@@ -153,7 +159,7 @@ public class Solver {
 		public int compareTo(SearchNode that) {
 			return ((Integer) this.priorityNum).compareTo(that.priorityNum);
 		}
-	}	
+	}
 
 	public static void main(String[] args) {
 		// solve a slider puzzle (given below)
@@ -170,14 +176,14 @@ public class Solver {
 		Solver solver = new Solver(initial);
 
 		// print solution to standard output
-		if (!solver.isSolvable()){
+		if (!solver.isSolvable()) {
 			StdOut.println("No solution possible");
 			System.out.println(solver.runSteps);
 			StdOut.println("Twin Solution is:");
 			for (Board board : solver.solutionTwin())
 				StdOut.println(board);
 		}
-			
+
 		else {
 			StdOut.println("Minimum number of moves = " + solver.moves());
 			System.out.println(solver.runSteps);
