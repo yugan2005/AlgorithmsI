@@ -73,7 +73,7 @@ public class Merge<E extends Comparable<E>> {
 	}
 	
 	public static void main(String[] args){
-		Integer[] originalArray = {69, 99, 40, 35, 67, 27, 65, 34, 60, 80, 28, 70};
+		Integer[] originalArray = {31, 52, 38, 97, 69, 92, 37, 74, 65, 70, 34, 36};
 		Merge<Integer> prob1 = new Merge<Integer>(originalArray, 7);
 		prob1.sort();
 	}
