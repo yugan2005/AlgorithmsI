@@ -5,11 +5,11 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
 public class KdTree {
-	private TwoDTree<Double, Double> treeSet;
+	private TwoDTree<Double> treeSet;
 
 	public KdTree() {
 		// construct an empty set of points
-		treeSet = new TwoDTree<Double, Double>();
+		treeSet = new TwoDTree<Double>();
 	}
 
 	public boolean isEmpty() {
@@ -25,7 +25,7 @@ public class KdTree {
 	public void insert(Point2D p) {
 		// add the point to the set (if it is not already in the set)
 		if (p==null) throw new NullPointerException("The input to insert method is null!");
-		treeSet.put(p.x(), p.y());
+		treeSet.put(p.x(), p);
 	}
 
 	public boolean contains(Point2D p) {
@@ -36,99 +36,27 @@ public class KdTree {
 
 	public void draw() {
 		// draw all points to standard draw
-		for (Point2D p:treeSet) p.draw();
+		// TODO
 	}
 
 	public Iterable<Point2D> range(RectHV rect) {
 		// all points that are inside the rectangle
 		if (rect==null) throw new NullPointerException("The input to range method is null!");
-		Bag<Point2D> result = new Bag<Point2D>();
-		for (Point2D p:treeSet) {
-			if (rect.contains(p)) result.add(p);
-		}
-		return result;
+		//TODO
+		return null;
 	}
 
 	public Point2D nearest(Point2D p) {
 		// a nearest neighbor in the set to point p; null if the set is empty
 		if (p==null) throw new NullPointerException("The input to nearest method is null!");
-		
-		Point2D nearestPoint = null;
-		double minDistance = Double.MAX_VALUE;
-		for (Point2D q:treeSet){
-			if (p.distanceTo(q)<minDistance) {
-				minDistance = p.distanceSquaredTo(q);
-				nearestPoint = q;
-			}
-		}
-		return nearestPoint;
+		// TODO
+		return null;
+
 	}
 	
-	/******************************************************************************
-	 *  Compilation:  javac RedBlackBST.java
-	 *  Execution:    java RedBlackBST < input.txt
-	 *  Dependencies: StdIn.java StdOut.java  
-	 *  Data files:   http://algs4.cs.princeton.edu/33balanced/tinyST.txt  
-	 *    
-	 *  A symbol table implemented using a left-leaning red-black BST.
-	 *  This is the 2-3 version.
-	 *
-	 *  Note: commented out assertions because DrJava now enables assertions
-	 *        by default.
-	 *
-	 *  % more tinyST.txt
-	 *  S E A R C H E X A M P L E
-	 *  
-	 *  % java RedBlackBST < tinyST.txt
-	 *  A 8
-	 *  C 4
-	 *  E 12
-	 *  H 5
-	 *  L 11
-	 *  M 9
-	 *  P 10
-	 *  R 3
-	 *  S 0
-	 *  X 7
-	 *
-	 ******************************************************************************/
-
-
-	/**
-	 *  The <tt>BST</tt> class represents an ordered symbol table of generic
-	 *  key-value pairs.
-	 *  It supports the usual <em>put</em>, <em>get</em>, <em>contains</em>,
-	 *  <em>delete</em>, <em>size</em>, and <em>is-empty</em> methods.
-	 *  It also provides ordered methods for finding the <em>minimum</em>,
-	 *  <em>maximum</em>, <em>floor</em>, and <em>ceiling</em>.
-	 *  It also provides a <em>keys</em> method for iterating over all of the keys.
-	 *  A symbol table implements the <em>associative array</em> abstraction:
-	 *  when associating a value with a key that is already in the symbol table,
-	 *  the convention is to replace the old value with the new value.
-	 *  Unlike {@link java.util.Map}, this class uses the convention that
-	 *  values cannot be <tt>null</tt>&mdash;setting the
-	 *  value associated with a key to <tt>null</tt> is equivalent to deleting the key
-	 *  from the symbol table.
-	 *  <p>
-	 *  This implementation uses a left-leaning red-black BST. It requires that
-	 *  the key type implements the <tt>Comparable</tt> interface and calls the
-	 *  <tt>compareTo()</tt> and method to compare two keys. It does not call either
-	 *  <tt>equals()</tt> or <tt>hashCode()</tt>.
-	 *  The <em>put</em>, <em>contains</em>, <em>remove</em>, <em>minimum</em>,
-	 *  <em>maximum</em>, <em>ceiling</em>, and <em>floor</em> operations each take
-	 *  logarithmic time in the worst case, if the tree becomes unbalanced.
-	 *  The <em>size</em>, and <em>is-empty</em> operations take constant time.
-	 *  Construction takes constant time.
-	 *  <p>
-	 *  For additional documentation, see <a href="http://algs4.cs.princeton.edu/33balanced">Section 3.3</a> of
-	 *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
-	 *  For other implementations, see {@link ST}, {@link BinarySearchST},
-	 *  {@link SequentialSearchST}, {@link BST},
-	 *  {@link SeparateChainingHashST}, and {@link LinearProbingHashST},
-	 *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
-	 */
-
-	private class TwoDTree<Key extends Comparable<Key>, Value> {
+// copied and changed from the original Red-Black BST source code
+	
+	private class TwoDTree {
 
 	    private static final boolean RED   = true;
 	    private static final boolean BLACK = false;
@@ -137,13 +65,14 @@ public class KdTree {
 
 	    // BST helper node data type
 	    private class Node {
-	        private Key key;           // key
-	        private Value val;         // associated data
+	        private double key;           // key
+	        private Point2D val;         // associated data
 	        private Node left, right;  // links to left and right subtrees
 	        private boolean color;     // color of parent link
 	        private int N;             // subtree count
+	        private int level;			// the level on the tree
 
-	        public Node(Key key, Value val, boolean color, int N) {
+	        public Node(Key key, Point2D val, boolean color, int N) {
 	            this.key = key;
 	            this.val = val;
 	            this.color = color;
@@ -154,7 +83,7 @@ public class KdTree {
 	    /**
 	     * Initializes an empty symbol table.
 	     */
-	    public RedBlackBST() {
+	    public TwoDTree() {
 	    }
 
 	   /***************************************************************************
@@ -201,12 +130,12 @@ public class KdTree {
 	     *     and <tt>null</tt> if the key is not in the symbol table
 	     * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
 	     */
-	    public Value get(Key key) {
+	    public Point2D get(Key key) {
 	        return get(root, key);
 	    }
 
 	    // value associated with the given key in subtree rooted at x; null if no such key
-	    private Value get(Node x, Key key) {
+	    private Point2D get(Node x, Key key) {
 	        while (x != null) {
 	            int cmp = key.compareTo(x.key);
 	            if      (cmp < 0) x = x.left;
@@ -239,14 +168,14 @@ public class KdTree {
 	     * @param val the value
 	     * @throws NullPointerException if <tt>key</tt> is <tt>null</tt>
 	     */
-	    public void put(Key key, Value val) {
+	    public void put(Key key, Point2D val) {
 	        root = put(root, key, val);
 	        root.color = BLACK;
 	        // assert check();
 	    }
 
 	    // insert the key-value pair in the subtree rooted at h
-	    private Node put(Node h, Key key, Value val) { 
+	    private Node put(Node h, Key key, Point2D val) { 
 	        if (h == null) return new Node(key, val, RED, 1);
 
 	        int cmp = key.compareTo(h.key);
