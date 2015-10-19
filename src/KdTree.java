@@ -1,10 +1,6 @@
-import java.util.ArrayDeque;
-import java.util.NoSuchElementException;
-import java.util.Queue;
-
-import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * @author yug This version of KdTree is based on normal Binary Search Tree and
@@ -39,23 +35,15 @@ public class KdTree {
 				RectHV parentRect = parentNode.rect;
 				if (level % 2 == 0) { // parentNode is dividing by y
 					if (p.y() < parentNode.key) // take the bottom part
-						this.rect = new RectHV(parentRect.xmin(),
-								parentRect.ymin(), parentRect.xmax(),
-								parentNode.key);
+						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentRect.xmax(), parentNode.key);
 					else
-						this.rect = new RectHV(parentRect.xmin(),
-								parentNode.key, parentRect.xmax(),
-								parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(), parentNode.key, parentRect.xmax(), parentRect.ymax());
 				} else { // arentNode is dividing by x
 					if (p.x() < parentNode.key) // take the left part
-						this.rect = new RectHV(parentRect.xmin(),
-								parentRect.ymin(), parentNode.key,
-								parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentNode.key, parentRect.ymax());
 					else
 						// take the right part
-						this.rect = new RectHV(parentNode.key,
-								parentRect.ymin(), parentRect.xmax(),
-								parentRect.ymax());
+						this.rect = new RectHV(parentNode.key, parentRect.ymin(), parentRect.xmax(), parentRect.ymax());
 				}
 			}
 		}
@@ -93,14 +81,12 @@ public class KdTree {
 	public void insert(Point2D p) {
 		// add the point to the set (if it is not already in the set)
 		if (p == null)
-			throw new NullPointerException(
-					"The input to insert method is null!");
+			throw new NullPointerException("The input to insert method is null!");
 		boolean matchedPrevious = false;
-		insert(root, p, 0, matchedPrevious, null);
+		root = insert(root, p, 0, matchedPrevious, null);
 	}
 
-	private Node insert(Node node, Point2D p, int level,
-			boolean matchedPrevious, Node parentNode) {
+	private Node insert(Node node, Point2D p, int level, boolean matchedPrevious, Node parentNode) {
 		if (node == null)
 			return new Node(p, level, 1, parentNode); // the last 1 is the
 														// number
@@ -117,8 +103,7 @@ public class KdTree {
 				node.p = p; // replace
 			else {
 				matchedPrevious = true;
-				node.right = insert(node.right, p, level + 1, matchedPrevious,
-						node);
+				node.right = insert(node.right, p, level + 1, matchedPrevious, node);
 			}
 		}
 		node.number = 1 + size(node.left) + size(node.right);
@@ -128,8 +113,7 @@ public class KdTree {
 	public boolean contains(Point2D p) {
 		// does the set contain point p?
 		if (p == null)
-			throw new NullPointerException(
-					"The input to contains method is null!");
+			throw new NullPointerException("The input to contains method is null!");
 		return get(p) != null;
 	}
 
@@ -143,35 +127,42 @@ public class KdTree {
 			return null;
 		Double pKey = (level % 2 == 0) ? p.x() : p.y();
 		int cmp = pKey.compareTo(node.key);
-		
-		if (cmp<0){
-			matchedPrevious=false;
-			return get(node.left, p, level+1, matchedPrevious);
-		}
-		else if (cmp>0){
+
+		if (cmp < 0) {
 			matchedPrevious = false;
-			return get(node.right, p, level+1, matchedPrevious);
-		}
-		else {
-			if (matchedPrevious) return node.p;
+			return get(node.left, p, level + 1, matchedPrevious);
+		} else if (cmp > 0) {
+			matchedPrevious = false;
+			return get(node.right, p, level + 1, matchedPrevious);
+		} else {
+			if (matchedPrevious)
+				return node.p;
 			else {
 				matchedPrevious = true;
-				return get(node.right, p, level+1, matchedPrevious);
+				return get(node.right, p, level + 1, matchedPrevious);
 			}
 		}
 	}
 
 	public void draw() {
 		// draw all points to standard draw
-		Queue<KdTree.Node> queue = new ArrayDeque<KdTree.Node>();
-		queue.add(root);
-		while (!queue.isEmpty()){
-			Node node=queue.remove();
-			if (node==null) continue;
-			queue.add(node.left);
-			queue.add(node.right))
-		}
-		
+		draw(root);
+	}
+
+	private void draw(Node node) {
+		if (node == null)
+			return;
+		draw(node.left);
+		draw(node.right);
+		StdDraw.setPenColor(StdDraw.BLACK);
+		node.p.draw();
+		if (node.level == 0) // root use black color
+			StdDraw.setPenColor(StdDraw.BLACK);
+		else if (node.level % 2 == 0)
+			StdDraw.setPenColor(StdDraw.BLUE);
+		else
+			StdDraw.setPenColor(StdDraw.RED);
+		node.rect.draw();
 	}
 
 	public Iterable<Point2D> range(RectHV rect) {
@@ -185,35 +176,9 @@ public class KdTree {
 	public Point2D nearest(Point2D p) {
 		// a nearest neighbor in the set to point p; null if the set is empty
 		if (p == null)
-			throw new NullPointerException(
-					"The input to nearest method is null!");
+			throw new NullPointerException("The input to nearest method is null!");
 		// TODO
 		return null;
-
-	}
-
-	private class TwoDTreeSet {
-		private class Node {
-			private int level; // number of levels in the tree. root=0;
-			private int number; // number of nodes in subtrees
-			private double key; // sorted by key
-			private Node left, right; // left and right subtrees;
-			private Point2D p; // associated point
-
-			public Node(Point2D p, int level, int number) {
-				this.p = p;
-				this.level = level;
-				if (level % 2 == 0)
-					this.key = p.x();
-				else
-					this.key = p.y();
-			}
-		}
-
-		private Node root;
-
-		public TwoDTreeSet() {
-		}
 
 	}
 
