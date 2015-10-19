@@ -242,24 +242,22 @@ public class KdTree {
 			throw new NullPointerException("The input to nearest method is null!");
 		if (root == null)
 			return null;
-		double closestDistanceSQ = root.p.distanceSquaredTo(p);
-		Point2D closestPoint = root.p;
 		Node currentNode = root;
-		nearest(p, currentNode, closestPoint, closestDistanceSQ);
-		return closestPoint;
+		Point2D closestPoint = root.p;
+		return nearest(p, currentNode, closestPoint);
 	}
 
-	private void nearest(Point2D p, Node currentNode, Point2D closestPoint, double closestDistanceSQ) {
+	private Point2D nearest(Point2D p, Node currentNode, Point2D closestPoint) {
+		double closestDistanceSQ = closestPoint.distanceSquaredTo(p);
 		if (currentNode == null)
-			return;
+			return closestPoint;
 		if (p.equals(currentNode.p)) {
 			closestPoint = currentNode.p;
-			closestDistanceSQ = 0;
-			return;
+			return closestPoint;
 		}
 
 		if (currentNode.rect.distanceSquaredTo(p) > closestDistanceSQ)
-			return;
+			return closestPoint;
 
 		if (currentNode.p.distanceSquaredTo(p) < closestDistanceSQ) {
 			closestPoint = currentNode.p;
@@ -273,13 +271,15 @@ public class KdTree {
 			goLeft = (p.y() < currentNode.p.y()) ? true : false;
 
 		if (goLeft){
-			nearest(p, currentNode.left, closestPoint, closestDistanceSQ);
-			nearest(p, currentNode.right, closestPoint, closestDistanceSQ);
+			closestPoint = nearest(p, currentNode.left, closestPoint);
+			closestPoint = nearest(p, currentNode.right, closestPoint);
 		}
 		else{
-			nearest(p, currentNode.right, closestPoint, closestDistanceSQ);
-			nearest(p, currentNode.left, closestPoint, closestDistanceSQ);
+			closestPoint = nearest(p, currentNode.right, closestPoint);
+			closestPoint = nearest(p, currentNode.left, closestPoint);
 		}
+		
+		return closestPoint;
 	}
 
 	public static void main(String[] args) {
