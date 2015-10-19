@@ -179,19 +179,19 @@ public class KdTree {
 		}
 	}
 
-	/**
-	 * This method is for test only, need delete it afterwards
-	 * 
-	 * @param p
-	 * @return
-	 */
-	public int getLevel(Point2D p) {
-		// TODO need be deleted
-		if (getNode(p) == null)
-			return -1;
-		else
-			return getNode(p).level;
-	}
+//	/**
+//	 * This method is for test only, need delete it afterwards
+//	 * 
+//	 * @param p
+//	 * @return
+//	 */
+//	public int getLevel(Point2D p) {
+//		// TODO need be deleted
+//		if (getNode(p) == null)
+//			return -1;
+//		else
+//			return getNode(p).level;
+//	}
 
 	private Node getNode(Point2D p) {
 		return getNode(root, p, 0);

@@ -33,17 +33,17 @@ public class KdTreeTest {
 
 	}
 
-	@Test
-	public void insertPointsShowCorrectLevels() {
-
-		assertThat(testTree.getLevel(p1), equalTo(0));
-		assertThat(testTree.getLevel(p2), equalTo(1));
-		assertThat(testTree.getLevel(p3), equalTo(2));
-		assertThat(testTree.getLevel(p4), equalTo(3));
-		assertThat(testTree.getLevel(p5), equalTo(1));
-		assertThat(testTree.getLevel(p6), equalTo(3));
-
-	}
+//	@Test
+//	public void insertPointsShowCorrectLevels() {
+//
+//		assertThat(testTree.getLevel(p1), equalTo(0));
+//		assertThat(testTree.getLevel(p2), equalTo(1));
+//		assertThat(testTree.getLevel(p3), equalTo(2));
+//		assertThat(testTree.getLevel(p4), equalTo(3));
+//		assertThat(testTree.getLevel(p5), equalTo(1));
+//		assertThat(testTree.getLevel(p6), equalTo(3));
+//
+//	}
 
 	@Test
 	public void findPointsUsingRange() {
