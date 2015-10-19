@@ -35,15 +35,23 @@ public class KdTree {
 				RectHV parentRect = parentNode.rect;
 				if (level % 2 == 0) { // parentNode is dividing by y
 					if (p.y() < parentNode.key) // take the bottom part
-						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentRect.xmax(), parentNode.key);
+						this.rect = new RectHV(parentRect.xmin(),
+								parentRect.ymin(), parentRect.xmax(),
+								parentNode.key);
 					else
-						this.rect = new RectHV(parentRect.xmin(), parentNode.key, parentRect.xmax(), parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(),
+								parentNode.key, parentRect.xmax(),
+								parentRect.ymax());
 				} else { // arentNode is dividing by x
 					if (p.x() < parentNode.key) // take the left part
-						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentNode.key, parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(),
+								parentRect.ymin(), parentNode.key,
+								parentRect.ymax());
 					else
 						// take the right part
-						this.rect = new RectHV(parentNode.key, parentRect.ymin(), parentRect.xmax(), parentRect.ymax());
+						this.rect = new RectHV(parentNode.key,
+								parentRect.ymin(), parentRect.xmax(),
+								parentRect.ymax());
 				}
 			}
 		}
@@ -81,29 +89,26 @@ public class KdTree {
 	public void insert(Point2D p) {
 		// add the point to the set (if it is not already in the set)
 		if (p == null)
-			throw new NullPointerException("The input to insert method is null!");
-		boolean matchedPrevious = false;
-		root = insert(root, p, 0, matchedPrevious, null);
+			throw new NullPointerException(
+					"The input to insert method is null!");
+		root = insert(root, p, 0, null);
 	}
 
-	private Node insert(Node node, Point2D p, int level, boolean matchedPrevious, Node parentNode) {
+	private Node insert(Node node, Point2D p, int level, Node parentNode) {
 		if (node == null)
 			return new Node(p, level, 1, parentNode); // the last 1 is the
 														// number
 		Double pKey = (level % 2 == 0) ? p.x() : p.y();
 		int cmp = pKey.compareTo(node.key);
 		if (cmp < 0) {
-			matchedPrevious = false;
-			node.left = insert(node.left, p, level + 1, matchedPrevious, node);
+			node.left = insert(node.left, p, level + 1, node);
 		} else if (cmp > 0) {
-			matchedPrevious = false;
-			node.right = insert(node.right, p, level + 1, matchedPrevious, node);
+			node.right = insert(node.right, p, level + 1, node);
 		} else {
-			if (matchedPrevious)
+			if (node.p.equals(p))
 				node.p = p; // replace
 			else {
-				matchedPrevious = true;
-				node.right = insert(node.right, p, level + 1, matchedPrevious, node);
+				node.right = insert(node.right, p, level + 1, node);
 			}
 		}
 		node.number = 1 + size(node.left) + size(node.right);
@@ -113,33 +118,30 @@ public class KdTree {
 	public boolean contains(Point2D p) {
 		// does the set contain point p?
 		if (p == null)
-			throw new NullPointerException("The input to contains method is null!");
+			throw new NullPointerException(
+					"The input to contains method is null!");
 		return get(p) != null;
 	}
 
 	private Point2D get(Point2D p) {
-		boolean matchedPrevious = false;
-		return get(root, p, 0, matchedPrevious);
+		return get(root, p, 0);
 	}
 
-	private Point2D get(Node node, Point2D p, int level, boolean matchedPrevious) {
+	private Point2D get(Node node, Point2D p, int level) {
 		if (node == null)
 			return null;
 		Double pKey = (level % 2 == 0) ? p.x() : p.y();
 		int cmp = pKey.compareTo(node.key);
 
 		if (cmp < 0) {
-			matchedPrevious = false;
-			return get(node.left, p, level + 1, matchedPrevious);
+			return get(node.left, p, level + 1);
 		} else if (cmp > 0) {
-			matchedPrevious = false;
-			return get(node.right, p, level + 1, matchedPrevious);
+			return get(node.right, p, level + 1);
 		} else {
-			if (matchedPrevious)
+			if (node.p.equals(p))
 				return node.p;
 			else {
-				matchedPrevious = true;
-				return get(node.right, p, level + 1, matchedPrevious);
+				return get(node.right, p, level + 1);
 			}
 		}
 	}
@@ -164,41 +166,40 @@ public class KdTree {
 			StdDraw.setPenColor(StdDraw.RED);
 		node.rect.draw();
 	}
-	
+
 	/**
 	 * This method is for test only, need delete it afterwards
+	 * 
 	 * @param p
 	 * @return
 	 */
-	public int getLevel(Point2D p){
+	public int getLevel(Point2D p) {
 		// TODO need be deleted
-		if (getNode(p)==null) return -1;
-		else return getNode(p).level;
+		if (getNode(p) == null)
+			return -1;
+		else
+			return getNode(p).level;
 	}
 
 	private Node getNode(Point2D p) {
-		boolean matchedPrevious = false;
-		return getNode(root, p, 0, matchedPrevious);	
+		return getNode(root, p, 0);
 	}
 
-	private Node getNode(Node node, Point2D p, int level, boolean matchedPrevious) {
+	private Node getNode(Node node, Point2D p, int level) {
 		if (node == null)
 			return null;
 		Double pKey = (level % 2 == 0) ? p.x() : p.y();
 		int cmp = pKey.compareTo(node.key);
 
 		if (cmp < 0) {
-			matchedPrevious = false;
-			return getNode(node.left, p, level + 1, matchedPrevious);
+			return getNode(node.left, p, level + 1);
 		} else if (cmp > 0) {
-			matchedPrevious = false;
-			return getNode(node.right, p, level + 1, matchedPrevious);
+			return getNode(node.right, p, level + 1);
 		} else {
-			if (matchedPrevious)
+			if (node.p.equals(p))
 				return node;
 			else {
-				matchedPrevious = true;
-				return getNode(node.right, p, level + 1, matchedPrevious);
+				return getNode(node.right, p, level + 1);
 			}
 		}
 	}
@@ -214,7 +215,8 @@ public class KdTree {
 	public Point2D nearest(Point2D p) {
 		// a nearest neighbor in the set to point p; null if the set is empty
 		if (p == null)
-			throw new NullPointerException("The input to nearest method is null!");
+			throw new NullPointerException(
+					"The input to nearest method is null!");
 		// TODO
 		return null;
 
