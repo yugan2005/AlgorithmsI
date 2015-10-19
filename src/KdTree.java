@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
@@ -227,8 +228,20 @@ public class KdTree {
 		// all points that are inside the rectangle
 		if (rect == null)
 			throw new NullPointerException("The input to range method is null!");
-		// TODO
-		return null;
+		Bag<Point2D> result = new Bag<>();
+		range(rect, root, result);
+		return result;
+	}
+
+	private void range(RectHV rect, Node node, Bag<Point2D> result) {
+		if (node == null)
+			return;
+		if (!node.rect.intersects(rect))
+			return;
+		if (rect.contains(node.p))
+			result.add(node.p);
+		range(rect, node.left, result);
+		range(rect, node.right, result);
 	}
 
 	public Point2D nearest(Point2D p) {

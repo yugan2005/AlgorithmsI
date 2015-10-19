@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.RectHV;
 
 public class KdTreeTest {
 	Point2D p1, p2, p3, p4, p5, p6;
@@ -40,6 +41,21 @@ public class KdTreeTest {
 		assertThat(testTree.getLevel(p5), equalTo(1));
 		assertThat(testTree.getLevel(p6), equalTo(3));
 
+	}
+	
+	@Test
+	public void findPointsUsingRange(){
+		testTree.insert(p1);
+		testTree.insert(p2);
+		testTree.insert(p3);
+		testTree.insert(p4);
+		testTree.insert(p5);
+		testTree.insert(p6);
+		
+		RectHV testRect = new RectHV(.1, .25, .35, .35);
+		Iterable<Point2D> findResult = testTree.range(testRect);
+		
+		
 	}
 
 }
