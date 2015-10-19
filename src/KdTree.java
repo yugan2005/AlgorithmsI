@@ -164,6 +164,44 @@ public class KdTree {
 			StdDraw.setPenColor(StdDraw.RED);
 		node.rect.draw();
 	}
+	
+	/**
+	 * This method is for test only, need delete it afterwards
+	 * @param p
+	 * @return
+	 */
+	public int getLevel(Point2D p){
+		// TODO need be deleted
+		if (getNode(p)==null) return -1;
+		else return getNode(p).level;
+	}
+
+	private Node getNode(Point2D p) {
+		boolean matchedPrevious = false;
+		return getNode(root, p, 0, matchedPrevious);	
+	}
+
+	private Node getNode(Node node, Point2D p, int level, boolean matchedPrevious) {
+		if (node == null)
+			return null;
+		Double pKey = (level % 2 == 0) ? p.x() : p.y();
+		int cmp = pKey.compareTo(node.key);
+
+		if (cmp < 0) {
+			matchedPrevious = false;
+			return getNode(node.left, p, level + 1, matchedPrevious);
+		} else if (cmp > 0) {
+			matchedPrevious = false;
+			return getNode(node.right, p, level + 1, matchedPrevious);
+		} else {
+			if (matchedPrevious)
+				return node;
+			else {
+				matchedPrevious = true;
+				return getNode(node.right, p, level + 1, matchedPrevious);
+			}
+		}
+	}
 
 	public Iterable<Point2D> range(RectHV rect) {
 		// all points that are inside the rectangle
