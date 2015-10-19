@@ -165,6 +165,25 @@ public class KdTree {
 		else
 			StdDraw.setPenColor(StdDraw.RED);
 		node.rect.draw();
+
+		// need draw the last line for the terminal nodes
+		if (node.left == null && node.right == null) {
+			if (node.level % 2 == 1) {
+				StdDraw.setPenColor(StdDraw.BLUE);
+				double y0 = node.p.y();
+				double y1 = y0;
+				double x0 = node.rect.xmin();
+				double x1 = node.rect.xmax();
+				StdDraw.line(x0, y0, x1, y1);
+			} else {
+				StdDraw.setPenColor(StdDraw.RED);
+				double x0 = node.p.x();
+				double x1 = x0;
+				double y0 = node.rect.ymin();
+				double y1 = node.rect.ymax();
+				StdDraw.line(x0, y0, x1, y1);
+			}
+		}
 	}
 
 	/**
