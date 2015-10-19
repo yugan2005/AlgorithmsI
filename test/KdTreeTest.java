@@ -1,5 +1,8 @@
 import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,11 +24,6 @@ public class KdTreeTest {
 		p6 = new Point2D(.4, .4);
 
 		testTree = new KdTree();
-
-	}
-
-	@Test
-	public void insertPointsShowCorrectLevels() {
 		testTree.insert(p1);
 		testTree.insert(p2);
 		testTree.insert(p3);
@@ -33,6 +31,10 @@ public class KdTreeTest {
 		testTree.insert(p5);
 		testTree.insert(p6);
 
+	}
+
+	@Test
+	public void insertPointsShowCorrectLevels() {
 
 		assertThat(testTree.getLevel(p1), equalTo(0));
 		assertThat(testTree.getLevel(p2), equalTo(1));
@@ -42,20 +44,32 @@ public class KdTreeTest {
 		assertThat(testTree.getLevel(p6), equalTo(3));
 
 	}
-	
+
 	@Test
-	public void findPointsUsingRange(){
-		testTree.insert(p1);
-		testTree.insert(p2);
-		testTree.insert(p3);
-		testTree.insert(p4);
-		testTree.insert(p5);
-		testTree.insert(p6);
-		
+	public void findPointsUsingRange() {
+
 		RectHV testRect = new RectHV(.1, .25, .35, .35);
-		Iterable<Point2D> findResult = testTree.range(testRect);
-		
-		
+		Iterable<Point2D> result = testTree.range(testRect);
+		List<Point2D> findResult = new ArrayList<>();
+		for (Point2D p : result)
+			findResult.add(p);
+
+		List<Point2D> actualResult = new ArrayList<>();
+		actualResult.add(p1);
+		actualResult.add(p4);
+
+		assertThat(actualResult, containsInAnyOrder(findResult.toArray()));
+		// The containsInAnyOrder is what I need use
+		// The second better be a Array!
+	}
+
+	@Test
+	public void findTheNearestPoint() {
+		Point2D testPoint = new Point2D(0.29, 0.29);
+		Point2D nearestPoint = testTree.nearest(testPoint);
+
+		assertThat(nearestPoint, equalTo(p4));
+
 	}
 
 }

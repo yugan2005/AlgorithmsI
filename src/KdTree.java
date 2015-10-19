@@ -36,23 +36,15 @@ public class KdTree {
 				RectHV parentRect = parentNode.rect;
 				if (level % 2 == 0) { // parentNode is dividing by y
 					if (p.y() < parentNode.key) // take the bottom part
-						this.rect = new RectHV(parentRect.xmin(),
-								parentRect.ymin(), parentRect.xmax(),
-								parentNode.key);
+						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentRect.xmax(), parentNode.key);
 					else
-						this.rect = new RectHV(parentRect.xmin(),
-								parentNode.key, parentRect.xmax(),
-								parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(), parentNode.key, parentRect.xmax(), parentRect.ymax());
 				} else { // arentNode is dividing by x
 					if (p.x() < parentNode.key) // take the left part
-						this.rect = new RectHV(parentRect.xmin(),
-								parentRect.ymin(), parentNode.key,
-								parentRect.ymax());
+						this.rect = new RectHV(parentRect.xmin(), parentRect.ymin(), parentNode.key, parentRect.ymax());
 					else
 						// take the right part
-						this.rect = new RectHV(parentNode.key,
-								parentRect.ymin(), parentRect.xmax(),
-								parentRect.ymax());
+						this.rect = new RectHV(parentNode.key, parentRect.ymin(), parentRect.xmax(), parentRect.ymax());
 				}
 			}
 		}
@@ -90,8 +82,7 @@ public class KdTree {
 	public void insert(Point2D p) {
 		// add the point to the set (if it is not already in the set)
 		if (p == null)
-			throw new NullPointerException(
-					"The input to insert method is null!");
+			throw new NullPointerException("The input to insert method is null!");
 		root = insert(root, p, 0, null);
 	}
 
@@ -119,8 +110,7 @@ public class KdTree {
 	public boolean contains(Point2D p) {
 		// does the set contain point p?
 		if (p == null)
-			throw new NullPointerException(
-					"The input to contains method is null!");
+			throw new NullPointerException("The input to contains method is null!");
 		return get(p) != null;
 	}
 
@@ -158,7 +148,9 @@ public class KdTree {
 		draw(node.left);
 		draw(node.right);
 		StdDraw.setPenColor(StdDraw.BLACK);
+		StdDraw.setPenRadius(StdDraw.getPenRadius()*10);
 		node.p.draw();
+		StdDraw.setPenRadius();
 		if (node.level == 0) // root use black color
 			StdDraw.setPenColor(StdDraw.BLACK);
 		else if (node.level % 2 == 0)
@@ -247,15 +239,67 @@ public class KdTree {
 	public Point2D nearest(Point2D p) {
 		// a nearest neighbor in the set to point p; null if the set is empty
 		if (p == null)
-			throw new NullPointerException(
-					"The input to nearest method is null!");
-		// TODO
-		return null;
+			throw new NullPointerException("The input to nearest method is null!");
+		if (root == null)
+			return null;
+		double closestDistanceSQ = root.p.distanceSquaredTo(p);
+		Point2D closestPoint = root.p;
+		Node currentNode = root;
+		nearest(p, currentNode, closestPoint, closestDistanceSQ);
+		return closestPoint;
+	}
 
+	private void nearest(Point2D p, Node currentNode, Point2D closestPoint, double closestDistanceSQ) {
+		if (currentNode == null)
+			return;
+		if (p.equals(currentNode.p)) {
+			closestPoint = currentNode.p;
+			closestDistanceSQ = 0;
+			return;
+		}
+
+		if (currentNode.rect.distanceSquaredTo(p) > closestDistanceSQ)
+			return;
+
+		if (currentNode.p.distanceSquaredTo(p) < closestDistanceSQ) {
+			closestPoint = currentNode.p;
+			closestDistanceSQ = currentNode.p.distanceSquaredTo(p);
+		}
+
+		boolean goLeft = false;
+		if (currentNode.level % 2 == 0)
+			goLeft = (p.x() < currentNode.p.x()) ? true : false;
+		else
+			goLeft = (p.y() < currentNode.p.y()) ? true : false;
+
+		if (goLeft){
+			nearest(p, currentNode.left, closestPoint, closestDistanceSQ);
+			nearest(p, currentNode.right, closestPoint, closestDistanceSQ);
+		}
+		else{
+			nearest(p, currentNode.right, closestPoint, closestDistanceSQ);
+			nearest(p, currentNode.left, closestPoint, closestDistanceSQ);
+		}
 	}
 
 	public static void main(String[] args) {
 		// unit testing of the methods (optional)
+		Point2D p1 = new Point2D(.2, .3);
+		Point2D p2 = new Point2D(.4, .2);
+		Point2D p3 = new Point2D(.4, .5);
+		Point2D p4 = new Point2D(.3, .3);
+		Point2D p5 = new Point2D(.1, .5);
+		Point2D p6 = new Point2D(.4, .4);
+
+		KdTree testTree = new KdTree();
+		testTree.insert(p1);
+		testTree.insert(p2);
+		testTree.insert(p3);
+		testTree.insert(p4);
+		testTree.insert(p5);
+		testTree.insert(p6);
+		
+		testTree.draw();
 	}
 
 }
