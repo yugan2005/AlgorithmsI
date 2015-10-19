@@ -29,6 +29,7 @@ public class KdTree {
 		public Node(Point2D p, int level, int number, Node parentNode) {
 			this.p = p;
 			this.level = level;
+			this.number=number;
 			this.key = (level % 2 == 0) ? p.x() : p.y();
 			if (parentNode == null) {
 				this.rect = new RectHV(0, 0, 1, 1);
