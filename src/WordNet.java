@@ -1,31 +1,38 @@
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 public class WordNet {
 	private Digraph G;
-	private Map<String, Integer> dictionary;
+	private SAP S;
+	private Map<String, List<Integer>> dictionary;
+	private Map<Integer, String> synsetDictionary;
 
 	// constructor takes the name of the two input files
 	public WordNet(String synsets, String hypernyms) {
 		if (synsets == null || hypernyms == null)
 			throw new NullPointerException();
 		dictionary = new HashMap<>();
+		synsetDictionary = new HashMap<>();
 		try {
 			In nounInput = new In(synsets);
 			while (nounInput.hasNextLine()) {
 				String line = nounInput.readLine();
 				String[] fields = line.split(",");
 				int synsetId = Integer.parseInt(fields[0]);
+				synsetDictionary.put(synsetId, fields[1]);
 				String[] nouns = fields[1].split(" ");
 				for (String noun : nouns) {
-					dictionary.put(noun, synsetId);
+					if (dictionary.get(noun)==null){
+						List<Integer> wordIds = new ArrayList<>();
+						wordIds.add(synsetId);
+						dictionary.put(noun, wordIds);
+					}
+					dictionary.get(noun).add(synsetId);
 				}
 			}
 		} catch (Exception e) {
@@ -61,7 +68,7 @@ public class WordNet {
 					throw new IllegalArgumentException("It has more than one root");
 			}
 		}
-
+		S = new SAP(G);
 	}
 
 	// returns all WordNet nouns
@@ -71,22 +78,40 @@ public class WordNet {
 
 	// is the word a WordNet noun?
 	public boolean isNoun(String word) {
+		if (word == null)
+			throw new NullPointerException();
+
 		return dictionary.containsKey(word);
 
 	}
 
 	// distance between nounA and nounB (defined below)
 	public int distance(String nounA, String nounB) {
-		return 0;
+		if (nounA == null || nounB == null)
+			throw new NullPointerException();
+		if (dictionary.get(nounA) == null || dictionary.get(nounB) == null)
+			throw new IllegalArgumentException();
 
+		List<Integer> idA = dictionary.get(nounA);
+		List<Integer> idB = dictionary.get(nounB);
+
+		return S.length(idA, idB);
 	}
 
 	// a synset (second field of synsets.txt) that is the common ancestor of
 	// nounA and nounB
 	// in a shortest ancestral path (defined below)
 	public String sap(String nounA, String nounB) {
-		return nounB;
+		if (nounA == null || nounB == null)
+			throw new NullPointerException();
+		if (dictionary.get(nounA) == null || dictionary.get(nounB) == null)
+			throw new IllegalArgumentException();
 
+		List<Integer> idA = dictionary.get(nounA);
+		List<Integer> idB = dictionary.get(nounB);
+		
+		int commonAncestor = S.ancestor(idA, idB);
+		return synsetDictionary.get(commonAncestor);
 	}
 
 	// do unit testing of this class
