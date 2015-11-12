@@ -5,40 +5,43 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 public class WordNet {
-	private Digraph wordNet;
-	private Map<Integer, Set<String>> nouns;
+	private Digraph G;
+	private Map<String, Integer> dictionary;
 
 	// constructor takes the name of the two input files
 	public WordNet(String synsets, String hypernyms) {
 		if (synsets == null || hypernyms == null)
 			throw new NullPointerException();
-		nouns = new HashMap<>();
+		dictionary = new HashMap<>();
 		try {
 			In nounInput = new In(synsets);
 			while (nounInput.hasNextLine()) {
 				String line = nounInput.readLine();
 				String[] fields = line.split(",");
 				int synsetId = Integer.parseInt(fields[0]);
-				Set<String> synonyms = new HashSet<>(Arrays.asList(fields[1].split(" ")));
-				nouns.put(synsetId, synonyms);
+				String[] nouns = fields[1].split(" ");
+				for (String noun : nouns) {
+					dictionary.put(noun, synsetId);
+				}
 			}
 		} catch (Exception e) {
 			throw new IllegalArgumentException(synsets + " file cannot read properly");
 		}
 
-		wordNet = new Digraph(nouns.size());
+		G = new Digraph(dictionary.size());
 
 		try {
 			In graphIn = new In(hypernyms);
 			while (graphIn.hasNextLine()) {
 				String line = graphIn.readLine();
-				String[] synsetIdInStr = line.split(",");
-				int v = Integer.parseInt(synsetIdInStr[0]);
-				for (int i = 1; i < synsetIdInStr.length; i++) {
-					wordNet.addEdge(v, Integer.parseInt(synsetIdInStr[i]));
+				String[] synsetIdsInStr = line.split(",");
+				int v = Integer.parseInt(synsetIdsInStr[0]);
+				for (int i = 1; i < synsetIdsInStr.length; i++) {
+					G.addEdge(v, Integer.parseInt(synsetIdsInStr[i]));
 				}
 			}
 
@@ -46,20 +49,29 @@ public class WordNet {
 			throw new IllegalArgumentException(hypernyms + " file cannot read properly");
 		}
 
+		DirectedCycle cycle = new DirectedCycle(G);
+		if (cycle.hasCycle())
+			throw new IllegalArgumentException("It has Directed Cycle");
+
+		int rootCounter = 0;
+		for (int i = 0; i < G.V(); i++) {
+			if (G.outdegree(i) == 0) {
+				rootCounter++;
+				if (rootCounter > 1)
+					throw new IllegalArgumentException("It has more than one root");
+			}
+		}
+
 	}
 
 	// returns all WordNet nouns
 	public Iterable<String> nouns() {
-		Set<String> allNouns = new HashSet<>();
-		for (int synsetId:nouns.keySet()){
-			allNouns.addAll(nouns.get(synsetId));
-		}
-		return allNouns;
+		return dictionary.keySet();
 	}
 
 	// is the word a WordNet noun?
 	public boolean isNoun(String word) {
-		return false;
+		return dictionary.containsKey(word);
 
 	}
 
