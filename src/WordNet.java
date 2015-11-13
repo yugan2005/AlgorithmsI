@@ -39,7 +39,7 @@ public class WordNet {
 			throw new IllegalArgumentException(synsets + " file cannot read properly");
 		}
 
-		G = new Digraph(dictionary.size());
+		G = new Digraph(synsetDictionary.size());
 
 		try {
 			In graphIn = new In(hypernyms);

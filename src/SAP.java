@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 
 public class SAP {
-	private Digraph G;
+	private final Digraph G;
 	private int cachedV, cachedW, cachedCommonAncestor, cachedShortestLength;
 	private Iterable<Integer> cachedIterableV, cachedIterableW;
 	private int cachedIterableShortestLength, cachedIterableCommonAncestor;
@@ -14,7 +14,7 @@ public class SAP {
 	public SAP(Digraph G) {
 		if (G == null)
 			throw new NullPointerException("Input digraph is Null");
-		this.G = G;
+		this.G = new Digraph(G);
 	}
 
 	// length of shortest ancestral path between v and w; -1 if no such path
@@ -118,6 +118,9 @@ public class SAP {
 	}
 
 	private boolean iterableContainIterable(Iterable<Integer> c1, Iterable<Integer> c2) {
+		if (c1 == null || c2 == null)
+			return false;
+		
 		for (int i : c1) {
 			boolean contain = false;
 			for (int j : c2) {
