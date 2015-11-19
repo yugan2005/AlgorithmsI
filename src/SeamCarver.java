@@ -64,57 +64,7 @@ public class SeamCarver {
 	}
 
 	public int[] findHorizontalSeam() {
-		// // sequence of indices for horizontal seam
-		// int[] seam = new int[picture.width()];
-		// double globalMinimumCumulativeEnergy = Double.POSITIVE_INFINITY;
-		//
-		// for (int i = 0; i < picture.height(); i++) {
-		// int[][] pathTo = new int[picture.width()][picture.height()];
-		// double[][] cumulativeEnergy = new
-		// double[picture.width()][picture.height()];
-		//
-		// int col = 0;
-		// int row = i;
-		// cumulativeEnergy[col][row]=pictureEnergy[col][row];
-		// while (col<picture.width()-1){
-		// for (int nextRow : adj(row, "horizontal")){
-		// double currentCumulativeEnergy =
-		// cumulativeEnergy[col][row]+pictureEnergy[col+1][nextRow];
-		// if (cumulativeEnergy[col+1][nextRow]<1000 ||
-		// cumulativeEnergy[col+1][nextRow]>currentCumulativeEnergy){
-		// //Not visited yet or need be relaxed
-		// cumulativeEnergy[col+1][nextRow]=currentCumulativeEnergy;
-		// pathTo[col+1][nextRow]=row;
-		// }
-		// }
-		// col += 1;
-		// }
-		//
-		// //find the minimum path for this row
-		// int minEndRow = 0;
-		// double currentMinCumulativeEnergy = Double.POSITIVE_INFINITY;
-		// for (int rowIdx = 0; rowIdx<picture.height(); rowIdx++){
-		// if
-		// (cumulativeEnergy[picture.width()-1][rowIdx]<currentMinCumulativeEnergy){
-		// minEndRow = rowIdx;
-		// currentMinCumulativeEnergy =
-		// cumulativeEnergy[picture.width()-1][rowIdx];
-		// }
-		// }
-		//
-		// if (currentMinCumulativeEnergy<globalMinimumCumulativeEnergy){
-		// int pathRowIdx = minEndRow;
-		// globalMinimumCumulativeEnergy = currentMinCumulativeEnergy;
-		// for (int colIdx=picture.width()-1; colIdx>0; colIdx--){
-		// seam[colIdx-1] = pathTo[colIdx][pathRowIdx];
-		// pathRowIdx = pathTo[colIdx][pathRowIdx];
-		// }
-		// }
-		//
-		//
-		// }
-		// return seam;
-		// }
+		
 		String axis = "horizontal";
 		int bound = picture.width() - 1;
 		int otherBound = picture.height();
@@ -218,6 +168,16 @@ public class SeamCarver {
 	public static void main(String[] args) {
 		Picture picture = new Picture("6x5.png");
 		SeamCarver test = new SeamCarver(picture);
+		System.out.println("energy");
+		for (double[] col : test.pictureEnergy){
+			String thisCol = "";
+			for (double cell : col){
+				thisCol += String.format(" %.2f,", cell);
+			}
+			System.out.println(thisCol);
+		}
+		System.out.println("End of energy map");
+		System.out.println(test.width());
 		for (int path : test.findHorizontalSeam()) {
 			System.out.println(path);
 		}
