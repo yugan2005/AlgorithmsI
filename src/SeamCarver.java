@@ -294,11 +294,11 @@ public class SeamCarver {
 		// System.out.println(test.pictureEnergy[idx][path]);
 		// idx++;
 		// }
-//		for (int i = 0; i < 300; i++) {
-//			int[] seam = test.findVerticalSeam();
-//			test.removeVerticalSeam(seam);
-//		}
-		for (int i = 0; i <00; i++) {
+		// for (int i = 0; i < 300; i++) {
+		// int[] seam = test.findVerticalSeam();
+		// test.removeVerticalSeam(seam);
+		// }
+		for (int i = 0; i <200; i++) {
 			int[] seam = test.findHorizontalSeam();
 			test.removeHorizontalSeam(seam);
 		}
