@@ -7,6 +7,7 @@ import java.util.List;
 import com.sun.corba.se.impl.interceptors.PICurrent;
 
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.Stack;
 
 public class SeamCarver {
 	private Picture picture;
@@ -63,64 +64,123 @@ public class SeamCarver {
 	}
 
 	public int[] findHorizontalSeam() {
-		// sequence of indices for horizontal seam
-		int[] seam = new int[picture.width()];
-		double globalMinimumCumulativeEnergy = Double.POSITIVE_INFINITY;
+		// // sequence of indices for horizontal seam
+		// int[] seam = new int[picture.width()];
+		// double globalMinimumCumulativeEnergy = Double.POSITIVE_INFINITY;
+		//
+		// for (int i = 0; i < picture.height(); i++) {
+		// int[][] pathTo = new int[picture.width()][picture.height()];
+		// double[][] cumulativeEnergy = new
+		// double[picture.width()][picture.height()];
+		//
+		// int col = 0;
+		// int row = i;
+		// cumulativeEnergy[col][row]=pictureEnergy[col][row];
+		// while (col<picture.width()-1){
+		// for (int nextRow : adj(row, "horizontal")){
+		// double currentCumulativeEnergy =
+		// cumulativeEnergy[col][row]+pictureEnergy[col+1][nextRow];
+		// if (cumulativeEnergy[col+1][nextRow]<1000 ||
+		// cumulativeEnergy[col+1][nextRow]>currentCumulativeEnergy){
+		// //Not visited yet or need be relaxed
+		// cumulativeEnergy[col+1][nextRow]=currentCumulativeEnergy;
+		// pathTo[col+1][nextRow]=row;
+		// }
+		// }
+		// col += 1;
+		// }
+		//
+		// //find the minimum path for this row
+		// int minEndRow = 0;
+		// double currentMinCumulativeEnergy = Double.POSITIVE_INFINITY;
+		// for (int rowIdx = 0; rowIdx<picture.height(); rowIdx++){
+		// if
+		// (cumulativeEnergy[picture.width()-1][rowIdx]<currentMinCumulativeEnergy){
+		// minEndRow = rowIdx;
+		// currentMinCumulativeEnergy =
+		// cumulativeEnergy[picture.width()-1][rowIdx];
+		// }
+		// }
+		//
+		// if (currentMinCumulativeEnergy<globalMinimumCumulativeEnergy){
+		// int pathRowIdx = minEndRow;
+		// globalMinimumCumulativeEnergy = currentMinCumulativeEnergy;
+		// for (int colIdx=picture.width()-1; colIdx>0; colIdx--){
+		// seam[colIdx-1] = pathTo[colIdx][pathRowIdx];
+		// pathRowIdx = pathTo[colIdx][pathRowIdx];
+		// }
+		// }
+		//
+		//
+		// }
+		// return seam;
+		// }
+		String axis = "horizontal";
+		int bound = picture.width() - 1;
+		int otherBound = picture.height();
 
-		for (int i = 0; i < picture.height(); i++) {
-			int[][] pathTo = new int[picture.width()][picture.height()];
-			double[][] cumulativeEnergy = new double[picture.width()][picture.height()];
-			
-			int col = 0;
-			int row = i;
-			cumulativeEnergy[col][row]=pictureEnergy[col][row];
-			while (col<picture.width()-1){
-				for (int nextRow : adj(row, "horizontal")){
-					double currentCumulativeEnergy = cumulativeEnergy[col][row]+pictureEnergy[col+1][nextRow];
-					if (cumulativeEnergy[col+1][nextRow]<1000 || cumulativeEnergy[col+1][nextRow]>currentCumulativeEnergy){
-						//Not visited yet or need be relaxed
-						cumulativeEnergy[col+1][nextRow]=currentCumulativeEnergy;
-						pathTo[col+1][nextRow]=row;
-					}
-				}
-				col += 1;
-			}
-			
-			//find the minimum path for this row
-			int minEndRow = 0;
-			double currentMinCumulativeEnergy = Double.POSITIVE_INFINITY;
-			for (int rowIdx = 0; rowIdx<picture.height(); rowIdx++){
-				if (cumulativeEnergy[picture.width()-1][rowIdx]<currentMinCumulativeEnergy){
-					minEndRow = rowIdx;
-					currentMinCumulativeEnergy = cumulativeEnergy[picture.width()-1][rowIdx];
-				}
-			}
-			
-			if (currentMinCumulativeEnergy<globalMinimumCumulativeEnergy){
-				int pathRowIdx = minEndRow;
-				globalMinimumCumulativeEnergy = currentMinCumulativeEnergy;
-				for (int colIdx=picture.width()-1; colIdx>0; colIdx--){
-					seam[colIdx-1] = pathTo[colIdx][pathRowIdx];
-					pathRowIdx = pathTo[colIdx][pathRowIdx];
-				}
-			}
-			
+		int[][] pathTo = new int[picture.width()][picture.height()];
+		double[][] cumulativeEnergy = new double[picture.width()][picture.height()];
 
+		for (int i = 0; i < otherBound; i++) {
+			cumulativeEnergy[0][i] = pictureEnergy[0][i];
 		}
-		return seam;
+
+		for (int i = 0; i < bound; i++) {
+			for (int j = 0; j < otherBound; j++) {
+				for (int k : adj(j, axis)) {
+					if ((cumulativeEnergy[i + 1][k] < 1000)
+							|| (cumulativeEnergy[i + 1][k] > pictureEnergy[i + 1][k] + cumulativeEnergy[i][j])) {
+						pathTo[i + 1][k] = j;
+						cumulativeEnergy[i + 1][k] = pictureEnergy[i + 1][k] + cumulativeEnergy[i][j];
+					}
+
+				}
+			}
+		}
+
+		double minEnergy = Double.POSITIVE_INFINITY;
+		int endPoint = 0;
+
+		for (int i = 0; i < otherBound; i++) {
+			if (cumulativeEnergy[bound][i] < minEnergy) {
+				minEnergy = cumulativeEnergy[bound][i];
+				endPoint = i;
+			}
+		}
+
+		Stack<Integer> path = new Stack<>();
+		path.push(endPoint);
+
+		for (int i = bound; i > 0; i--) {
+			path.push(pathTo[i][endPoint]);
+			endPoint = pathTo[i][endPoint];
+		}
+
+		int[] result = new int[bound + 1];
+		int idx = 0;
+		for (int point : path) {
+			result[idx] = point;
+			idx++;
+		}
+
+		return result;
+
 	}
 
-//	public int[] findVerticalSeam() {
-//		// sequence of indices for vertical seam
-//	}
-//
-//	public void removeHorizontalSeam(int[] seam) {
-//		// remove horizontal seam from current picture
-//	}
-//
-//	public void removeVerticalSeam(int[] seam) {
-//		// remove vertical seam from current picture
-//	}
+	// public int[] findVerticalSeam() {
+	// // sequence of indices for vertical seam
+	// }
+	//
+	// public void removeHorizontalSeam(int[] seam) {
+	// // remove horizontal seam from current picture
+	// }
+	//
+	// public void removeVerticalSeam(int[] seam) {
+	// // remove vertical seam from current picture
+	// }
+
+
 
 	private void getEnergy() {
 		pictureEnergy = new double[picture.width()][picture.height()];
@@ -131,8 +191,10 @@ public class SeamCarver {
 		}
 	}
 
-	private Iterable<Integer> adj(int y, String axis) {
-		int bound = 0;
+	private Iterable<Integer> adj(int i, String axis) {
+		List<Integer> result = new ArrayList<>(3);
+		result.add(i);
+		int bound;
 		switch (axis) {
 		case "horizontal":
 			bound = picture.height() - 1;
@@ -144,18 +206,19 @@ public class SeamCarver {
 			throw new IllegalArgumentException("can only be horizontal, or vertical");
 		}
 
-		if (y == bound) {
-			return Arrays.asList(y, y - 1);
-		} else if (y == 0) {
-			return Arrays.asList(y, y + 1);
+		if (i != 0) {
+			result.add(i - 1);
 		}
-		return Arrays.asList(y - 1, y, y + 1);
+		if (i != bound) {
+			result.add(i + 1);
+		}
+		return result;
 	}
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		Picture picture = new Picture("6x5.png");
 		SeamCarver test = new SeamCarver(picture);
-		for (int path:test.findHorizontalSeam()){
+		for (int path : test.findHorizontalSeam()) {
 			System.out.println(path);
 		}
 	}
