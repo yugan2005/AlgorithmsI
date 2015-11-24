@@ -26,7 +26,16 @@ public class Prob1 {
 		
 		//using bread first search
 		
-		Queue<Integer> 
+		boolean[] visited = new boolean[flowNet.V()];
+		int[] pathTo = new int[flowNet.V()];
+		
+		Queue<Integer> queue = new Queue<>();
+		queue.enqueue(0);
+		
+		while (!queue.isEmpty() && !visited['J'-'A']){
+			
+		}
+		
 		
 		
 	
