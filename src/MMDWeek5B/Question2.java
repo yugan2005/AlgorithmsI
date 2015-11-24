@@ -2,7 +2,6 @@ package MMDWeek5B;
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.StdDraw;
 
 public class Question2 {
 
