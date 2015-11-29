@@ -3,10 +3,12 @@ import java.util.Map;
 
 import edu.princeton.cs.algs4.FlowEdge;
 import edu.princeton.cs.algs4.FlowNetwork;
+import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
 
 public class BaseballElimination {
 	private FlowNetwork flowNet;
+	private int sourceCapacity;
 
 	int numTeam;
 	Map<String, Integer> teamIndex;
@@ -73,11 +75,15 @@ public class BaseballElimination {
 	public boolean isEliminated(String team) {
 		// is given team eliminated?
 		int teamX = teamIndex.get(team);
-		return false;
+		buildFlowNet(teamX);
+		FordFulkerson fordFulkerson = new FordFulkerson(flowNet, 0, flowNet.V());
+
+		return (fordFulkerson.value() < sourceCapacity);
 	}
 
 	private void buildFlowNet(int exclude) {
 		flowNet = new FlowNetwork(numTeam * (numTeam - 1) / 2 + numTeam + 2);
+		sourceCapacity = 0;
 		// 0 is the dummy source
 		// 1 ~ numTeam*(numTeam-1)/2 are the game vertexes
 		// numTeam*(numTeam-1)/2+1 ~ numTeam*(numTeam-1)/2+numTeam are the team
@@ -92,6 +98,7 @@ public class BaseballElimination {
 					int gameVertex = i * numTeam + j + 1;
 					FlowEdge gameEdge = new FlowEdge(0, gameVertex, g[i][j]);
 					flowNet.addEdge(gameEdge);
+					sourceCapacity += g[i][j];
 
 					int teamVertex = numTeam * (numTeam - 1) / 2 + 1 + i;
 					FlowEdge teamEdge = new FlowEdge(gameVertex, teamVertex,
@@ -115,8 +122,8 @@ public class BaseballElimination {
 	}
 
 	public Iterable<String> certificateOfElimination(String team) {
-		return null;
 		// subset R of teams that eliminates given team; null if not eliminated
+		return 
 	}
 
 	public static void main(String[] args) {
