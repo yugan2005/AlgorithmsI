@@ -1,15 +1,19 @@
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.princeton.cs.algs4.FlowEdge;
+import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.In;
 
 public class BaseballElimination {
+	private FlowNetwork flowNet;
+
 	int numTeam;
 	Map<String, Integer> teamIndex;
 	int[] w, l, r;
 	int[][] g;
 
-	public BaseballElimination(String filename){
+	public BaseballElimination(String filename) {
 		// create a baseball division from given filename in format specified
 		// below
 		In reader = new In(filename);
@@ -69,9 +73,49 @@ public class BaseballElimination {
 	public boolean isEliminated(String team) {
 		// is given team eliminated?
 		int teamX = teamIndex.get(team);
+		return false;
+	}
+
+	private void buildFlowNet(int exclude) {
+		flowNet = new FlowNetwork(numTeam * (numTeam - 1) / 2 + numTeam + 2);
+		// 0 is the dummy source
+		// 1 ~ numTeam*(numTeam-1)/2 are the game vertexes
+		// numTeam*(numTeam-1)/2+1 ~ numTeam*(numTeam-1)/2+numTeam are the team
+		// vertexes
+		// numTeam*(numTeam-1)/2+numTeam+1 is the dummy sink
+
+		for (int i = 0; i < numTeam; i++) {
+			for (int j = i + 1; j < numTeam; j++) {
+				if (i != exclude && j != exclude) {
+					// total number of iteration should be
+					// (numTeam-1)*(numTeam-2)/2
+					int gameVertex = i * numTeam + j + 1;
+					FlowEdge gameEdge = new FlowEdge(0, gameVertex, g[i][j]);
+					flowNet.addEdge(gameEdge);
+
+					int teamVertex = numTeam * (numTeam - 1) / 2 + 1 + i;
+					FlowEdge teamEdge = new FlowEdge(gameVertex, teamVertex,
+							g[i][j]);
+					int sinkCapacity = w[exclude] + r[exclude] - w[i];
+					FlowEdge sinkEdge = new FlowEdge(teamVertex, numTeam
+							* (numTeam - 1) / 2 + numTeam + 1, sinkCapacity);
+					flowNet.addEdge(teamEdge);
+					flowNet.addEdge(sinkEdge);
+
+					teamVertex = numTeam * (numTeam - 1) / 2 + 1 + j;
+					teamEdge = new FlowEdge(gameVertex, teamVertex, g[i][j]);
+					sinkCapacity = w[exclude] + r[exclude] - w[j];
+					sinkEdge = new FlowEdge(teamVertex, numTeam * (numTeam - 1)
+							/ 2 + numTeam + 1, sinkCapacity);
+					flowNet.addEdge(teamEdge);
+					flowNet.addEdge(sinkEdge);
+				}
+			}
+		}
 	}
 
 	public Iterable<String> certificateOfElimination(String team) {
+		return null;
 		// subset R of teams that eliminates given team; null if not eliminated
 	}
 
