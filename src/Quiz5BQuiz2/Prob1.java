@@ -1,4 +1,5 @@
 package Quiz5BQuiz2;
+// this is KMP
 
 public class Prob1 {
 	private static final int R = 3;
@@ -31,7 +32,7 @@ public class Prob1 {
 
 	public static void main(String[] args) {
 
-		int[][] output = DFATable("BBCBBCBA");
+		int[][] output = DFATable(String.join("", "C B C C B C B A".trim().split("\\s+")));
 
 		for (int i = 0; i < output.length; i++) {
 			StringBuilder sb = new StringBuilder();
