@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 public class BoggleSolver {
 	private static final int R = 26;
@@ -31,10 +32,8 @@ public class BoggleSolver {
 			if (node.next[idx] == null) {
 				node.next[idx] = new Node();
 			}
-			if ((i == input.length() - 1) || (i == input.length() - 2 && input.charAt(i) == 'Q')) {
+			if (i == input.length() - 1) {
 				node.next[idx].wordInDict = true;
-			} else if (input.charAt(i) == 'Q') {
-				node.next[idx] = put(node.next[idx], input, i + 2);
 			} else {
 				node.next[idx] = put(node.next[idx], input, i + 1);
 			}
@@ -52,10 +51,9 @@ public class BoggleSolver {
 
 			if (node.next[idx] == null)
 				return false;
-			if ((i == input.length() - 1) || (i == input.length() - 2 && input.charAt(i) == 'Q'))
+			if (i == input.length() - 1)
 				return node.next[idx].wordInDict;
-			if (input.charAt(i) == 'Q')
-				return isInsideDict(node.next[idx], input, i + 2);
+
 			return isInsideDict(node.next[idx], input, i + 1);
 		}
 
@@ -94,28 +92,38 @@ public class BoggleSolver {
 		if (visited[cell[0]][cell[1]])
 			return;
 		visited[cell[0]][cell[1]] = true;
+		int runningStrLen = runningStr.length();
 		char currentChar = board.getLetter(cell[0], cell[1]);
+		String currentStr = "" + currentChar;
 		int idx = currentChar - startChar;
 		Node nextNode = node.next[idx];
+
 		if (nextNode == null) {
 			visited[cell[0]][cell[1]] = false;
 			return;
 		}
-		if (nextNode.wordInDict) {
-			if (currentChar == 'Q') {
-				if (runningStr.length() >= 1)
-					result.add(runningStr + "QU");
-			} else {
-				if (runningStr.length() >= 2)
-					result.add(runningStr + currentChar);
+
+		if (currentChar == 'Q') {
+			currentChar = 'U';
+			runningStrLen++;
+			currentStr += 'U';
+			idx = currentChar - startChar;
+			nextNode = nextNode.next[idx];
+			
+			if (nextNode == null) {
+				visited[cell[0]][cell[1]] = false;
+				return;
 			}
 		}
+
+		if (nextNode.wordInDict) {
+
+			if (runningStrLen >= 2)
+				result.add(runningStr + currentStr);
+		}
+
 		for (Integer[] nextcell : adj(cell)) {
-			if (currentChar == 'Q') {
-				dfs(nextcell, nextNode, board, result, visited, runningStr + "QU");
-			} else {
-				dfs(nextcell, nextNode, board, result, visited, runningStr + currentChar);
-			}
+			dfs(nextcell, nextNode, board, result, visited, runningStr + currentStr);
 
 		}
 		visited[cell[0]][cell[1]] = false;
@@ -182,18 +190,21 @@ public class BoggleSolver {
 		In in = new In(args[0]);
 		String[] dictionary = in.readAllStrings();
 		BoggleSolver solver = new BoggleSolver(dictionary);
-		for (int i=0; i<1000; i++){
-			BoggleBoard board = new BoggleBoard(10, 10);
-			solver.getAllValidWords(board);
-			System.out.println("done: "+i);
-		}
-//		BoggleBoard board = new BoggleBoard(args[1]);
-//		int score = 0;
-//		for (String word : solver.getAllValidWords(board)) {
-//			StdOut.println(word);
-//			score += solver.scoreOf(word);
+//		for (int i = 0; i < 1000; i++) {
+//			BoggleBoard board = new BoggleBoard(10, 10);
+//			solver.getAllValidWords(board);
+//			System.out.println("done: " + i);
 //		}
-//		StdOut.println("Score = " + score);
+		 BoggleBoard board = new BoggleBoard(args[1]);
+		 int score = 0;
+		 int counter = 0;
+		 for (String word : solver.getAllValidWords(board)) {
+		 StdOut.println(word);
+		 score += solver.scoreOf(word);
+		 counter ++;
+		 }
+		 StdOut.println("Score = " + score);
+		 System.out.println(counter);
 	}
 
 }
