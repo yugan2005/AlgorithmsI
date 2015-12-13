@@ -4,13 +4,12 @@ import java.util.List;
 import java.util.Set;
 
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
 
 public class BoggleSolver {
 	private static final int R = 26;
 	private static final char startChar = 'A';
 	private Tries myDict;
-	int row, col;
+	private int row, col;
 
 	private class Node {
 		private boolean wordInDict;
