@@ -21,7 +21,7 @@ public class Prob2 {
 	
 
 	public static void main(String[] args) {
-		String input = "42 41 42 81 41 43 83 84 81 42 80";
+		String input = "41 41 43 81 42 43 42 84 84 43 80";
 		String[] inputs = input.trim().split("\\s+");
 		int[] codePoints = new int[inputs.length];
 		for (int i=0; i<codePoints.length; i++){
@@ -47,6 +47,12 @@ public class Prob2 {
 			test.ST.put(codePointIdx, prevStr+currentStr.charAt(0));
 			prevStr=currentStr;
 			codePointIdx++;
+		}
+		String result = sb.toString();
+		// pad space
+		sb = new StringBuilder();
+		for (int i=0; i<result.length();i++){
+			sb.append(result.charAt(i)+" ");
 		}
 		System.out.println(sb.toString().trim());
 		for (int i=129; i<=test.ST.size(); i++)

@@ -91,7 +91,7 @@ public class Prob1 {
 	}
 
 	public static void main(String[] args) {
-		String input = "IVCVLAIICWVLIWAALCVWWAILVCVILLWCWWCIWMLAIVWILW";
+		String input = "ULDUDLUXUUTRRRRRDDDUXUURXARUDULUURDUUARXUAXLUD";
 		Prob1 test = new Prob1();
 		test.readInput(input);
 		String encoded = test.compress(input);
