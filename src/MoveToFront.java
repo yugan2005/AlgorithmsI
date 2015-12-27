@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
+import jdk.nashorn.internal.ir.BinaryNode;
 
 public class MoveToFront {
 	private static final int R = 256;
@@ -29,23 +30,7 @@ public class MoveToFront {
 			while (iterator.hasNext() && iterator.next()!=inputChar) idx++;
 			iterator.remove();
 			codeTable.addFirst(inputChar);
-		}
-		try (InputStream input = new FileInputStream(new File("C:\\Users\\YG\\git\\AlgorithmsI\\src\\textfilesForTest\\abra.txt"))) {
-			InputStream in = new BufferedInputStream(input);
-			byte[] bufferedArray = new byte[1];
-			while (in.read(bufferedArray)!=-1){
-				char inputChar = (char) bufferedArray[0];
-				Iterator<Character> iterator = codeTable.iterator();
-				int idx=0;
-				while (iterator.hasNext() && iterator.next()!=inputChar) idx++;
-				iterator.remove();
-				codeTable.addFirst(inputChar);
-				System.out.println(String.format("%X ", idx));
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			BinaryStdOut.write(idx, 8);
 		}
 		
 	}
@@ -54,14 +39,16 @@ public class MoveToFront {
 	public static void decode(){
 		
 	}
+	
 
     // if args[0] is '-', apply move-to-front encoding
     // if args[0] is '+', apply move-to-front decoding
 	public static void main(String[] args){
-//		if (args[0].equals("-")) {
-//			encode();
-//		}
-		encode();
+		File fileInput = new File(args[1]);
+		InputStream input = new BufferedInputStream(new FileInputStream(fileInput));
+		if (args[0].equals("-")) {
+			encode();
+		}
 	}
 
 }
