@@ -1,1 +1,1 @@
-Double.POSITIVE_INFINITY==Math.abs(Double.NEGATIVE_INFINITY)(boolean) true
+System.out.println((int) 'A');
