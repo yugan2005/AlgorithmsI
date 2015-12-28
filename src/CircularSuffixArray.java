@@ -29,7 +29,7 @@ public class CircularSuffixArray {
 	
 	public CircularSuffixArray(String s){
 		// circular suffix array of s
-		if (s==null || s.length()==0) {
+		if (s==null) {
 			throw new NullPointerException();
 		}
 		this.s=s;

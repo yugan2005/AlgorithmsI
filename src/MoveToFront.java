@@ -1,11 +1,4 @@
 //import java.io.BufferedInputStream;
-//import java.io.File;
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.FileOutputStream;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import edu.princeton.cs.algs4.BinaryStdIn;
@@ -42,14 +35,14 @@ public class MoveToFront {
 		for (int i=0; i<R; i++){
 			codeTable.add((char) i);
 		}
-		StringBuilder sb = new StringBuilder();
 		while (!BinaryStdIn.isEmpty()){
 			int idx = BinaryStdIn.readInt(8);
 			char outputChar = codeTable.remove(idx);
 			codeTable.addFirst(outputChar);
-			sb.append(outputChar);
+			BinaryStdOut.write(outputChar);;
 		}
-		System.out.println(sb.toString());
+		BinaryStdOut.flush();
+
 	}
 	
 //	private static void hexDump(){
@@ -89,7 +82,7 @@ public class MoveToFront {
 //					PrintStream output = new PrintStream(new FileOutputStream(tempFile))) {
 //				System.setIn(input);
 //				System.setOut(output);
-//					encode();
+//				encode();
 //			} catch (FileNotFoundException e) {
 //				e.printStackTrace();
 //			} catch (IOException e) {
@@ -110,9 +103,23 @@ public class MoveToFront {
 //			}
 //		}
 //		else if (args[0].equals("+")) {
+//			try (InputStream input = new BufferedInputStream(new FileInputStream(new File(args[1])));
+//					PrintStream output = new PrintStream(new FileOutputStream(tempFile))) {
+//				System.setIn(input);
+//				System.setOut(output);
+//				decode();
+//			} catch (FileNotFoundException e) {
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			System.setOut(stdout);
+//			
+//			
 //			try(InputStream in = new BufferedInputStream(new FileInputStream(tempFile))) {
 //				System.setIn(in);
-//				decode();
+//				hexDump();
 //				
 //			} catch (FileNotFoundException e) {
 //				e.printStackTrace();
